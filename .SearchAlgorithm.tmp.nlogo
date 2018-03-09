@@ -53,8 +53,8 @@ to setup
   set gg4 []
   setup-d
   setup-genome
-  setup-turtles
-  ask one-of turtles [mutate_horizontalstrategies mutate_verticalstrategies]
+setup-turtles
+  ;ask one-of turtles [mutate_horizontalstrategies mutate_verticalstrategies]
    profiler:stop
   print profiler:report
   reset-ticks
