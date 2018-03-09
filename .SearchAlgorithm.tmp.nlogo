@@ -36,6 +36,7 @@ to setup
   clear-all
   profiler:reset
   profiler:start
+  random-seed 12345
   set budget 200
   ;set budget n-values 4 [9500000000 + random-float 5 ]
   set strategy [[1 0 0 0][0 1 0 0][0 0 1 0][0 0 0 1]]
@@ -67,11 +68,11 @@ to setup-d
   ]
 end
 to setup-genome
-  set gg1 (n-values budget [1])
-  set gg1 sentence gg1 (n-values (2000 - budget) [0])
+  set gg4 (n-values budget [1])
+  set gg sentence gg1 (n-values (2000 - budget) [0])
   set gg2 n-values 2000 [0]
   set gg3 n-values 2000 [0]
-  set gg4 n-values 2000 [0]
+  set gg1 n-values 2000 [0]
 end
 
 to setup-turtles
@@ -111,7 +112,7 @@ to go
   ]
   tick
   profiler:stop
-  ;print profiler:report
+  print profiler:report
 end
 
 to replicate-turtles ; a quarter of the players with higher outcome reproduce and generate a new players with the same strategy but a single mutation
@@ -125,7 +126,6 @@ to replicate-turtles ; a quarter of the players with higher outcome reproduce an
   ]
   ask min-n-of round (count old-generation / 4) old-generation [tf]  ;kills only old population -check please
   [
-
     die
   ]
 end
@@ -239,10 +239,10 @@ end
 to change-landscape
   let i 0
   while [i < 2000] [
-    set pd1 replace-item i pd1 random-float 10
-    set pd2 replace-item i pd2 random-float 100
-    set pd3 replace-item i pd3 random-float 100
-    set pd4 replace-item i pd4 random-float 100
+    set pd1 replace-item i pd1 random-float 1
+    set pd2 replace-item i pd2 random-float 1
+    set pd3 replace-item i pd3 random-float 1
+    set pd4 replace-item i pd4 random-float 1
     set i i + 1
   ]
 end
@@ -256,13 +256,13 @@ print profiler:report
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-474
-21
-801
-349
+583
+65
+659
+108
 -1
 -1
-15.2
+5.73
 1
 10
 1
@@ -273,9 +273,9 @@ GRAPHICS-WINDOW
 1
 1
 0
-20
+11
 0
-20
+5
 0
 0
 1
@@ -381,7 +381,7 @@ true
 false
 "" ""
 PENS
-"default" 1.0 0 -16777216 true "" "plot mean [tf] of turtles"
+"default" 1.0 0 -16777216 true "" "plot [tf] of max-one-of turtles [tf]"
 
 SLIDER
 29
@@ -414,6 +414,48 @@ NIL
 NIL
 NIL
 1
+
+PLOT
+580
+249
+986
+520
+Fitness of each action
+NIL
+NIL
+0.0
+10.0
+0.0
+10.0
+true
+true
+"" ""
+PENS
+"Action-1" 1.0 0 -16777216 true "" "plot [sf1] of max-one-of turtles [tf]"
+"Action-2" 1.0 0 -7500403 true "" "plot [sf2] of max-one-of turtles [tf]"
+"Action-3" 1.0 0 -2674135 true "" "plot [sf3] of max-one-of turtles [tf]"
+"Action-4" 1.0 0 -955883 true "" "plot [sf4] of max-one-of turtles [tf]"
+
+PLOT
+976
+92
+1341
+309
+plot 1
+NIL
+NIL
+0.0
+10.0
+0.0
+10.0
+true
+true
+"" ""
+PENS
+"Action-1" 1.0 0 -16777216 true "" "plot sum [g1] of max-one-of turtles [tf]"
+"Action-2" 1.0 0 -7500403 true "" "plot sum [g2] of max-one-of turtles [tf]"
+"Action-3" 1.0 0 -2674135 true "" "plot sum [g3] of max-one-of turtles [tf]"
+"Action-4" 1.0 0 -955883 true "" "plot sum [g4] of max-one-of turtles [tf]"
 
 @#$#@#$#@
 ## WHAT IS IT?
