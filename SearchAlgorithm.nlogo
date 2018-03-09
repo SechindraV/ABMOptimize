@@ -1,44 +1,40 @@
 ;; Each potential solution is represented by a turtle. Ant algorithm Do a longer search at the beginning and then;
 ;; check if the optimization produces better results than the search algorithm.
-extensions [profiler matrix]
+extensions[profiler]
 
 turtles-own[
-  g1
-  g2
-  g3
-  g4
-  d1
-  d2
-  d3
-  d4
-  f1
-  f2
-  f3
-  f4
+  g1 ; genome list for action 1
+  g2 ; genome list for action 2
+  g3 ; genome list for action 3
+  g4 ; genome list for action 4
+  f1 ; fitness list for action 1
+  f2 ; fitness list for action 2
+  f3 ; fitness list for action 3
+  f4 ; fitness list for action 4
   sf1 ; sum of fitness list 1
   sf2 ; sum of fitness list 2
   sf3 ; sum of fitness list 3
   sf4 ; sum of fitness list 4
   tf ;overall turtle fitness
-  nid ; id of new turtle population
 ]
 globals [
-  gg1
-  gg2
-  gg3
-  gg4
-  pd1 ;patch distance
-  pd2
-  pd3
-  pd4
- budget  ;;budget list for each action
- strategy;action 1
+  gg1 ;global genome list for action 1
+  gg2 ;global genome list for action 2
+  gg3 ;global genome list for action 3
+  gg4 ;global genome list for action 4
+  pd1 ;d for action 1
+  pd2 ;d for action 2
+  pd3 ;d for action 3
+  pd4 ;d for action 4
+  budget  ;;budget list for each action
+  strategy
+  mf_old ;mean fitness at t-1
+  mf_current ; mean fitness at t
 ]
-
 ;;create different patch-distances for each action, different costs, different budgets
 to setup
   clear-all
-   profiler:reset
+  profiler:reset
   profiler:start
   set budget 200
   ;set budget n-values 4 [9500000000 + random-float 5 ]
@@ -54,8 +50,8 @@ to setup
   setup-d
   setup-genome
   setup-turtles
-  ask one-of turtles [mutate_horizontalstrategies mutate_verticalstrategies]
-   profiler:stop
+  ;ask one-of turtles [mutate_horizontalstrategies mutate_verticalstrategies]
+  profiler:stop
   print profiler:report
   reset-ticks
 end
@@ -100,12 +96,22 @@ to go
   profiler:reset
   profiler:start
   if budget = 0 [stop]
-  print count turtles
+  ;print count turtles
+  if ticks > 150 [set mf_old mean [tf] of turtles]
   replicate-turtles
-  ask turtles [set nid 0]
+  if ticks > 150 [
+    set mf_current mean [tf] of turtles
+    if mf_current - mf_old <= threshold [
+    print [g1] of max-one-of turtles [tf]
+    print [g2] of max-one-of turtles [tf]
+    print [g3] of max-one-of turtles [tf]
+    print [g4] of max-one-of turtles [tf]
+    stop
+    ]
+  ]
   tick
   profiler:stop
-  print profiler:report
+  ;print profiler:report
 end
 
 to replicate-turtles ; a quarter of the players with higher outcome reproduce and generate a new players with the same strategy but a single mutation
@@ -354,7 +360,7 @@ PLOT
 257
 368
 539
-plot 1
+Mean fitness of population
 NIL
 NIL
 0.0
@@ -366,6 +372,21 @@ false
 "" ""
 PENS
 "default" 1.0 0 -16777216 true "" "plot mean [tf] of turtles"
+
+SLIDER
+29
+77
+201
+110
+threshold
+threshold
+0
+0.1
+1.0E-5
+0.00001
+1
+NIL
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?
