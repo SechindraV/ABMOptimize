@@ -496,7 +496,7 @@ CHOOSER
 initial-condition
 initial-condition
 1 2 3
-2
+0
 
 @#$#@#$#@
 ## WHAT IS IT?
@@ -846,6 +846,10 @@ NetLogo 6.0.2
   <experiment name="experiment" repetitions="1" runMetricsEveryStep="false">
     <setup>setup</setup>
     <go>go</go>
+    <metric>sum [g1] of max-one-of turtle [tf]</metric>
+    <metric>sum [g2] of max-one-of turtle [tf]</metric>
+    <metric>sum [g3] of max-one-of turtle [tf]</metric>
+    <metric>sum [g4] of max-one-of turtle [tf]</metric>
     <metric>[tf] of max-one-of turtles [tf]</metric>
     <enumeratedValueSet variable="initial-condition">
       <value value="1"/>
