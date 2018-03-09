@@ -3,9 +3,6 @@
 extensions [profiler matrix]
 
 turtles-own[
-  mg ; genome matrix
-  md ;distance of each turtle
-  mf ; fitness matrix
   g1
   g2
   g3
@@ -36,9 +33,6 @@ globals [
   pd4
  budget  ;;budget list for each action
  strategy;action 1
- ;strategy2; action 2
- ;strategy3 ; action 3
- ;strategy4 ; action 4
 ]
 
 ;;create different patch-distances for each action, different costs, different budgets
@@ -60,6 +54,7 @@ to setup
   setup-d
   setup-genome
  setup-turtles
+  ask one-of turtles [mutate_horizontalstrategies mutate_verticalstrategies]
    profiler:stop
   print profiler:report
   reset-ticks
@@ -85,17 +80,14 @@ end
 
 to setup-turtles
   create-turtles population-size [
-    set mg matrix:from-row-list (list gg1 gg2 gg3 gg4)
-    set md matrix:from-row-list (list pd1 pd2 pd3 pd4)
-    set mf matrix:times-element-wise mg md
     set g1 gg1
     set g2 gg2
     set g3 gg3
     set g4 gg4
-    set f1 map [[a b] -> a * b] g1 pd1
-    set f2 map [[a b] -> a * b] g2 pd2
-    set f3 map [[a b] -> a * b] g3 pd3
-    set f4 map [[a b] -> a * b] g4 pd4
+    set f1 (map [[a b] -> a * b] g1 pd1)
+    set f2 (map [[a b] -> a * b] g2 pd2)
+    set f3 (map [[a b] -> a * b] g3 pd3)
+    set f4 (map [[a b] -> a * b] g4 pd4)
     set sf1 sum(f1)
     set sf2 sum(f2)
     set sf3 sum(f3)
@@ -103,44 +95,6 @@ to setup-turtles
     set tf sf1 + sf2 + sf3 + sf4
   ]
  end
-;    set g1 []
-;    set g2 []
-;    set g3 []
-;    set g4 []
-;    set f1 []
-;    set f2 []
-;    set f3 []
-;    set f4 []
-;    let i 0
-;    while i < 2001 [
-;      let ng one-of strategy
-;      let p_d1 one-of pd1
-;      let p_d2 [pd2] of b
-;      let p_d3 [pd3] of b
-;      let p_d4 [pd4] of b
-      ;set g1 lput item 0 ng g1
-      ;set g2 lput item 1 ng g2
-     ; set g3 lput item 2 ng g3
-     ; set g4 lput item 3 ng g4
-;      set d lput p_d d
-;      set f1 lput (item i pd1 * item 0 ng) f1
-;      set f2 lput (item i pd2 * item 1 ng) f2
-;      set f3 lput (item i pd3 * item 2 ng) f3
-;      set f4 lput (item i pd4 * item 3 ng) f4
-;      set i i + 1
-;    ]
-;    set sf1 sum(f1)
-;    set sf2 sum(f2)
-;    set sf3 sum(f3)
-;    set sf4 sum(f4)
-;    set tf sf1 + sf2 + sf3 + sf4
-;    if tf > budget [set tf -1000000000]
-;;    if sf1 > item 0 budget or sf2 > item 1 budget or sf3 > item 2 budget or sf4 > item 3 budget [
-;;      set tf -1000000000
-;;    ]
-;  ]
-
-
 to go
  ; if ticks = 3 [stop]
   profiler:reset
@@ -184,48 +138,55 @@ to mutate_horizontalstrategies ;horizontal swapping of genome items
   let nv6 item ng2 g2
   let nv7 item ng2 g3
   let nv8 item ng2 g4
-  set g1 replace-item ng1 nv5 g1
-  set g2 replace-item ng1 nv6 g2
-  set g3 replace-item ng1 nv7 g3
-  set g4 replace-item ng1 nv8 g4
-  set g1 replace-item ng2 nv1 g1
-  set g2 replace-item ng2 nv2 g2
-  set g3 replace-item ng2 nv3 g3
-  set g4 replace-item ng2 nv4 g4
+  set g1 replace-item ng1 g1 nv5
+  set g2 replace-item ng1 g2 nv6
+  set g3 replace-item ng1 g3 nv7
+  set g4 replace-item ng1 g4 nv8
+  set g1 replace-item ng2 g1 nv1
+  set g2 replace-item ng2 g2 nv2
+  set g3 replace-item ng2 g3 nv3
+  set g4 replace-item ng2 g4 nv4
 end
 to mutate_verticalstrategies ;vertical swapping of genome items between patches
   let nloc n-of 2 [1 2 3 4]
   let ng1 random (2000 - 1)
-
-
+  if (item 0 nloc = 1 and item 1 nloc = 2) or (item 0 nloc = 2 and item 1 nloc = 1)[
+    let nv1 item ng1 g1
+    let nv2 item ng1 g2
+    set g1 replace-item ng1 g1 nv2
+    set g2 replace-item ng1 g2 nv1
+  ]
+  if (item 0 nloc = 1 and item 1 nloc = 3) or (item 0 nloc = 3 and item 1 nloc = 1)[
+    let nv1 item ng1 g1
+    let nv2 item ng1 g3
+    set g1 replace-item ng1 g1 nv2
+    set g3 replace-item ng1 g3 nv1
+  ]
+  if (item 0 nloc = 1 and item 1 nloc = 4) or (item 0 nloc = 2 and item 1 nloc = 4)[
+    let nv1 item ng1 g1
+    let nv2 item ng1 g4
+    set g1 replace-item ng1 g1 nv2
+    set g4 replace-item ng1 g4 nv1
+  ]
+  if (item 0 nloc = 2 and item 1 nloc = 3) or (item 0 nloc = 3 and item 1 nloc = 2)[
+    let nv1 item ng1 g2
+    let nv2 item ng1 g3
+    set g2 replace-item ng1 g2 nv2
+    set g3 replace-item ng1 g3 nv1
+  ]
+  if (item 0 nloc = 2 and item 1 nloc = 4) or (item 0 nloc = 4 and item 1 nloc = 2)[
+    let nv1 item ng1 g2
+    let nv2 item ng1 g4
+    set g2 replace-item ng1 g2 nv2
+    set g4 replace-item ng1 g4 nv1
+  ]
+  if (item 0 nloc = 3 and item 1 nloc = 4) or (item 0 nloc = 4 and item 1 nloc = 3)[
+    let nv1 item ng1 g3
+    let nv2 item ng1 g4
+    set g3 replace-item ng1 g3 nv2
+    set g4 replace-item ng1 g4 nv1
+  ]
 end
-
-
-;
-;
-;  let gm1 item n_g g1
-;  let gm2 item n_g g2
-;  let gm3 item n_g g3
-;  let gm4 item n_g g4
-;  let d1 item 0 (item n_g d)
-;  let d2 item 1 (item n_g d)
-;  let d3 item 2 (item n_g d)
-;  let d4 item 3 (item n_g d)
-;  set f1 replace-item n_g f1 (d1 * gm1)
-;  set f2 replace-item n_g f2 (d2 * gm2)
-;  set f3 replace-item n_g f3 (d3 * gm3)
-;  set f4 replace-item n_g f4 (d4 * gm4)
-;  set sf1 sum(f1)
-;  set sf2 sum(f2)
-;  set sf3 sum(f3)
-;  set sf4 sum(f4)
-;  set tf sf1 + sf2 + sf3 + sf4
-;  if tf > budget [set tf -1000000000]
-;;  if sf1 > item 0 budget or sf2 > item 1 budget or sf3 > item 2 budget or sf4 > item 3 budget [
-;;      set tf -1000000000
-;;    ]
-;end
-
 to profile
 setup
 profiler:reset
