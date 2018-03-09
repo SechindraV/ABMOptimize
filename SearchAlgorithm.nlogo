@@ -60,19 +60,48 @@ end
 to setup-d
   let i 0
   while [i < 2000] [
-    set pd1 lput random-float 1 pd1
-    set pd2 lput random-float 1 pd2
-    set pd3 lput random-float 1 pd3
-    set pd4 lput random-float 1 pd4
+    set pd1 lput (i / 2000) pd1
+    set pd2 lput (random-float (i / 2000)) pd2
+    set pd3 lput (1 - (i / 2000)) pd3
+    set pd4 lput (random-float (1 - (i / 2000))) pd4
+;    set pd1 lput random-float 1 pd1
+;    set pd2 lput random-float 1 pd2
+;    set pd3 lput random-float 1 pd3
+;    set pd4 lput random-float 1 pd4
     set i i + 1
   ]
 end
 to setup-genome
-  set gg4 (n-values budget [1])
-  set gg4 sentence gg4 (n-values (2000 - budget) [0])
-  set gg2 n-values 2000 [0]
-  set gg3 n-values 2000 [0]
-  set gg1 n-values 2000 [0]
+  if initial-condition = 1 [
+    set gg1 (n-values budget [1])
+    set gg1 sentence gg1 (n-values (2000 - budget) [0])
+    set gg2 n-values 2000 [0]
+    set gg3 n-values 2000 [0]
+    set gg4 n-values 2000 [0]
+  ]
+  if initial-condition = 2 [
+    set gg4 (n-values budget [1])
+    set gg4 sentence gg4 (n-values (2000 - budget) [0])
+    set gg2 n-values 2000 [0]
+    set gg3 n-values 2000 [0]
+    set gg1 n-values 2000 [0]
+  ]
+  if initial-condition = 3 [
+    set gg1 n-values 2000 [0]
+    set gg2 n-values 2000 [0]
+    set gg3 n-values 2000 [0]
+    set gg4 n-values 2000 [0]
+    let i 0
+    while [i < budget] [
+     let nloc random 4
+     let ng1 random 2000 - 1
+     if nloc = 0 [set gg1 replace-item ng1 gg1 1]
+     if nloc = 1 [set gg2 replace-item ng1 gg2 1]
+   if nloc = 2 [set gg3 replace-item ng1 gg3 1]
+   if nloc = 3 [set gg4 replace-item ng1 gg4 1]
+    set i i + 1
+    ]
+  ]
 end
 
 to setup-turtles
@@ -120,8 +149,10 @@ to replicate-turtles ; a quarter of the players with higher outcome reproduce an
   ask max-n-of round (count turtles / 4) turtles [tf]   ;first reproduce and then kill
   [
     hatch 1[
-      mutate_horizontalstrategies
-      mutate_verticalstrategies
+      repeat 10 [
+        mutate_horizontalstrategies
+        mutate_verticalstrategies
+      ]
     ]
   ]
   ask min-n-of round (count old-generation / 4) old-generation [tf]  ;kills only old population -check please
@@ -370,7 +401,7 @@ PLOT
 257
 368
 539
-Mean fitness of population
+Max fitness of population
 NIL
 NIL
 0.0
@@ -392,7 +423,7 @@ threshold
 threshold
 0
 0.1
-1.0E-5
+0.00892
 0.00001
 1
 NIL
@@ -416,10 +447,10 @@ NIL
 1
 
 PLOT
-580
-249
-986
-520
+476
+172
+882
+443
 Fitness of each action
 NIL
 NIL
@@ -456,6 +487,16 @@ PENS
 "Action-2" 1.0 0 -7500403 true "" "plot sum [g2] of max-one-of turtles [tf]"
 "Action-3" 1.0 0 -2674135 true "" "plot sum [g3] of max-one-of turtles [tf]"
 "Action-4" 1.0 0 -955883 true "" "plot sum [g4] of max-one-of turtles [tf]"
+
+CHOOSER
+70
+196
+208
+241
+initial-condition
+initial-condition
+1 2 3
+0
 
 @#$#@#$#@
 ## WHAT IS IT?
