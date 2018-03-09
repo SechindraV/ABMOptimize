@@ -97,15 +97,17 @@ to go
   profiler:start
   if budget = 0 [stop]
   ;print count turtles
-  if ticks > 150 set mf_old mean [tf] of turtles)
+  if ticks > 150 [set mf_old mean [tf] of turtles]
   replicate-turtles
-  if ticks > 150 (set mf_current mean [tf] of turtles)
-  if mf_current - mf_old <= threshold [
+  if ticks > 150 [
+    set mf_current mean [tf] of turtles
+    if mf_current - mf_old <= threshold [
     print [g1] of max-one-of turtles [tf]
     print [g2] of max-one-of turtles [tf]
     print [g3] of max-one-of turtles [tf]
     print [g4] of max-one-of turtles [tf]
     stop
+    ]
   ]
   tick
   profiler:stop
@@ -232,6 +234,16 @@ to mutate_verticalstrategies ;vertical swapping of genome items between patches
     set sf3 sum(f3)
     set sf4 sum(f4)
     set tf sf1 + sf2 + sf3 + sf4
+  ]
+end
+to change-landscape
+  let i 0
+  while [i < 2000] [
+    set pd1 replace-item i pd1 random-float 10
+    set pd2 replace-item i pd2 random-float 100
+    set pd3 replace-item i pd3 random-float 100
+    set pd4 replace-item i pd4 random-float 100
+    set i i + 1
   ]
 end
 to profile
@@ -385,6 +397,23 @@ threshold
 1
 NIL
 HORIZONTAL
+
+BUTTON
+52
+144
+198
+177
+NIL
+change-landscape
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
 
 @#$#@#$#@
 ## WHAT IS IT?

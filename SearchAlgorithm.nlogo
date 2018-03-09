@@ -236,6 +236,16 @@ to mutate_verticalstrategies ;vertical swapping of genome items between patches
     set tf sf1 + sf2 + sf3 + sf4
   ]
 end
+to change-landscape
+  let i 0
+  while [i < 2000] [
+    set pd1 replace-item i pd1 random-float 10
+    set pd2 replace-item i pd2 random-float 100
+    set pd3 replace-item i pd3 random-float 1
+    set pd4 replace-item i pd4 random-float 2
+    set i i + 1
+  ]
+end
 to profile
 setup
 profiler:reset
@@ -387,6 +397,23 @@ threshold
 1
 NIL
 HORIZONTAL
+
+BUTTON
+52
+144
+198
+177
+NIL
+change-landscape
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
 
 @#$#@#$#@
 ## WHAT IS IT?
