@@ -53,8 +53,8 @@ to setup
   set gg4 []
   setup-d
   setup-genome
-setup-turtles
-  ;ask one-of turtles [mutate_horizontalstrategies mutate_verticalstrategies]
+  setup-turtles
+  ask one-of turtles [mutate_horizontalstrategies mutate_verticalstrategies]
    profiler:stop
   print profiler:report
   reset-ticks
@@ -168,7 +168,7 @@ to mutate_verticalstrategies ;vertical swapping of genome items between patches
     let nv2 item ng1 g2
     set g1 replace-item ng1 g1 nv2
     set g2 replace-item ng1 g2 nv1
-    set f1 replace-item nloc f1 (item nloc g1 * item nloc pd1)
+    set f1 replace-item  f1 (item nloc g1 * item nloc pd1)
     set f2 replace-item nloc f2 (item nloc g2 * item nloc pd2)
     set sf1 sum(f1)
     set sf2 sum(f2)

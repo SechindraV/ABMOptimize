@@ -168,8 +168,8 @@ to mutate_verticalstrategies ;vertical swapping of genome items between patches
     let nv2 item ng1 g2
     set g1 replace-item ng1 g1 nv2
     set g2 replace-item ng1 g2 nv1
-    set f1 replace-item nloc f1 (item nloc g1 * item nloc pd1)
-    set f2 replace-item nloc f2 (item nloc g2 * item nloc pd2)
+    set f1 replace-item ng1 f1 (item ng1 g1 * item ng1 pd1)
+    set f2 replace-item ng1 f2 (item ng1 g2 * item ng1 pd2)
     set sf1 sum(f1)
     set sf2 sum(f2)
     set tf sf1 + sf2 + sf3 + sf4
@@ -179,8 +179,8 @@ to mutate_verticalstrategies ;vertical swapping of genome items between patches
     let nv2 item ng1 g3
     set g1 replace-item ng1 g1 nv2
     set g3 replace-item ng1 g3 nv1
-    set f1 replace-item nloc f1 (item nloc g1 * item nloc pd1)
-    set f3 replace-item nloc f3 (item nloc g3 * item nloc pd3)
+    set f1 replace-item ng1 f1 (item ng1 g1 * item ng1 pd1)
+    set f3 replace-item ng1 f3 (item ng1 g3 * item ng1 pd3)
     set sf1 sum(f1)
     set sf3 sum(f3)
     set tf sf1 + sf2 + sf3 + sf4
@@ -190,8 +190,8 @@ to mutate_verticalstrategies ;vertical swapping of genome items between patches
     let nv2 item ng1 g4
     set g1 replace-item ng1 g1 nv2
     set g4 replace-item ng1 g4 nv1
-    set f1 replace-item nloc f1 (item nloc g1 * item nloc pd1)
-    set f4 replace-item nloc f4 (item nloc g4 * item nloc pd4)
+    set f1 replace-item ng1 f1 (item ng1 g1 * item ng1 pd1)
+    set f4 replace-item ng1 f4 (item ng1 g4 * item ng1 pd4)
     set sf1 sum(f1)
     set sf4 sum(f4)
     set tf sf1 + sf2 + sf3 + sf4
@@ -201,8 +201,8 @@ to mutate_verticalstrategies ;vertical swapping of genome items between patches
     let nv2 item ng1 g3
     set g2 replace-item ng1 g2 nv2
     set g3 replace-item ng1 g3 nv1
-    set f2 replace-item nloc f2 (item nloc g2 * item nloc pd2)
-    set f3 replace-item nloc f3 (item nloc g3 * item nloc pd3)
+    set f2 replace-item ng1 f2 (item ng1 g2 * item ng1 pd2)
+    set f3 replace-item ng1 f3 (item ng1 g3 * item ng1 pd3)
     set sf2 sum(f2)
     set sf3 sum(f3)
     set tf sf1 + sf2 + sf3 + sf4
@@ -212,8 +212,8 @@ to mutate_verticalstrategies ;vertical swapping of genome items between patches
     let nv2 item ng1 g4
     set g2 replace-item ng1 g2 nv2
     set g4 replace-item ng1 g4 nv1
-    set f2 replace-item nloc f2 (item nloc g2 * item nloc pd2)
-    set f4 replace-item nloc f4 (item nloc g4 * item nloc pd4)
+    set f2 replace-item ng1 f2 (item ng1 g2 * item ng1 pd2)
+    set f4 replace-item ng1 f4 (item ng1 g4 * item ng1 pd4)
     set sf2 sum(f2)
     set sf4 sum(f4)
     set tf sf1 + sf2 + sf3 + sf4
@@ -223,8 +223,8 @@ to mutate_verticalstrategies ;vertical swapping of genome items between patches
     let nv2 item ng1 g4
     set g3 replace-item ng1 g3 nv2
     set g4 replace-item ng1 g4 nv1
-    set f3 replace-item nloc f3 (item nloc g3 * item nloc pd3)
-    set f4 replace-item nloc f4 (item nloc g4 * item nloc pd4)
+    set f3 replace-item ng1 f3 (item ng1 g3 * item ng1 pd3)
+    set f4 replace-item ng1 f4 (item ng1 g4 * item ng1 pd4)
     set sf3 sum(f3)
     set sf4 sum(f4)
     set tf sf1 + sf2 + sf3 + sf4
