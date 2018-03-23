@@ -150,14 +150,14 @@ end
 
 to replicate-turtles ; a quarter of the players with higher outcome reproduce and generate a new players with the same strategy but a single mutation
   let old-generation turtles with [true]
-  ask max-n-of round (count turtles / mutation-percent) turtles [tf]   ;first reproduce and then kill
+  ask max-n-of round (count turtles / mutation-fraction) turtles [tf]   ;first reproduce and then kill
   [
     hatch 1[
         mutate_horizontalstrategies
         mutate_verticalstrategies
     ]
   ]
-  ask min-n-of round (count old-generation / mutation-percent) old-generation [tf]  ;kills only old population
+  ask min-n-of round (count old-generation / mutation-fraction) old-generation [tf]  ;kills only old population
   [
     die
   ]
@@ -505,11 +505,11 @@ SLIDER
 91
 551
 124
-mutation-percent
-mutation-percent
+mutation-fraction
+mutation-fraction
 0
-20
-20.0
+100
+50.0
 1
 1
 NIL
@@ -863,9 +863,15 @@ NetLogo 6.0.2
   <experiment name="experiment2" repetitions="1" runMetricsEveryStep="false">
     <setup>setup</setup>
     <go>go</go>
+    <metric>[g1] of max-one-of turtles [tf]</metric>
+    <metric>[g2] of max-one-of turtles [tf]</metric>
+    <metric>[g3] of max-one-of turtles [tf]</metric>
+    <metric>[g4] of max-one-of turtles [tf]</metric>
     <metric>[tf] of max-one-of turtles [tf]</metric>
+    <metric>timer</metric>
     <enumeratedValueSet variable="initial-condition">
       <value value="1"/>
+      <value value="3"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="population-size">
       <value value="2000"/>
@@ -873,9 +879,8 @@ NetLogo 6.0.2
     <enumeratedValueSet variable="threshold">
       <value value="6.5E-4"/>
     </enumeratedValueSet>
-    <enumeratedValueSet variable="temp">
-      <value value="3"/>
-      <value value="4"/>
+    <enumeratedValueSet variable="mutation-fraction">
+      <value value="50"/>
     </enumeratedValueSet>
   </experiment>
 </experiments>
