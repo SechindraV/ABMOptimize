@@ -52,8 +52,8 @@ to setup
   setup-genome
   setup-turtles
   ;ask one-of turtles [mutate_horizontalstrategies mutate_verticalstrategies]
-  profiler:stop
-  print profiler:report
+  ;profiler:stop
+  ;print profiler:report
   reset-ticks
 end
 
@@ -123,37 +123,41 @@ to setup-turtles
  end
 to go
  ; if ticks = 3 [stop]
-  profiler:reset
-  profiler:start
+  if ticks = 1 [reset-timer]
+  ;profiler:reset
+  ;profiler:start
   if budget = 0 [stop]
   ;print count turtles
-  if ticks > 150 [set mf_old mean [tf] of turtles]
+  if ticks > 500 [set mf_old mean [tf] of turtles]
   replicate-turtles
-  if ticks > 150 [
+  if ticks > 500 [
     set mf_current mean [tf] of turtles
     if mf_current - mf_old <= threshold [
-    print [g1] of max-one-of turtles [tf]
-    print [g2] of max-one-of turtles [tf]
-    print [g3] of max-one-of turtles [tf]
-    print [g4] of max-one-of turtles [tf]
+    ;print [g1] of max-one-of turtles [tf]
+    ;print [g2] of max-one-of turtles [tf]
+    ;print [g3] of max-one-of turtles [tf]
+    ;print [g4] of max-one-of turtles [tf]
+      print [tf] of max-one-of turtles [tf]
+    print timer
     stop
     ]
   ]
   tick
-  profiler:stop
-  print profiler:report
+  ;print timer
+  ;profiler:stop
+  ;print profiler:report
 end
 
 to replicate-turtles ; a quarter of the players with higher outcome reproduce and generate a new players with the same strategy but a single mutation
   let old-generation turtles with [true]
-  ask max-n-of round (count turtles / 4) turtles [tf]   ;first reproduce and then kill
+  ask max-n-of round (count turtles / mutation-fraction) turtles [tf]   ;first reproduce and then kill
   [
     hatch 1[
         mutate_horizontalstrategies
         mutate_verticalstrategies
     ]
   ]
-  ask min-n-of round (count old-generation / 4) old-generation [tf]  ;kills only old population
+  ask min-n-of round (count old-generation / mutation-fraction) old-generation [tf]  ;kills only old population
   [
     die
   ]
@@ -421,7 +425,7 @@ threshold
 threshold
 0
 0.1
-0.00892
+6.5E-4
 0.00001
 1
 NIL
@@ -494,7 +498,22 @@ CHOOSER
 initial-condition
 initial-condition
 1 2 3
-2
+0
+
+SLIDER
+379
+91
+551
+124
+mutation-fraction
+mutation-fraction
+0
+100
+50.0
+1
+1
+NIL
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?
@@ -844,12 +863,14 @@ NetLogo 6.0.2
   <experiment name="experiment2" repetitions="1" runMetricsEveryStep="false">
     <setup>setup</setup>
     <go>go</go>
-    <metric>sum [g1] of max-one-of turtles [tf]</metric>
-    <metric>sum [g2] of max-one-of turtles [tf]</metric>
-    <metric>sum [g3] of max-one-of turtles [tf]</metric>
-    <metric>sum [g4] of max-one-of turtles [tf]</metric>
+    <metric>show [g1] of max-one-of turtles [tf]</metric>
+    <metric>show [g2] of max-one-of turtles [tf]</metric>
+    <metric>show [g3] of max-one-of turtles [tf]</metric>
+    <metric>show [g4] of max-one-of turtles [tf]</metric>
     <metric>[tf] of max-one-of turtles [tf]</metric>
+    <metric>show timer</metric>
     <enumeratedValueSet variable="initial-condition">
+      <value value="1"/>
       <value value="3"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="population-size">
@@ -857,6 +878,9 @@ NetLogo 6.0.2
     </enumeratedValueSet>
     <enumeratedValueSet variable="threshold">
       <value value="6.5E-4"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="temp">
+      <value value="50"/>
     </enumeratedValueSet>
   </experiment>
 </experiments>
