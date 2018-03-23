@@ -80,13 +80,27 @@ to setup-genome
     set gg4 n-values 2000 [0]
   ]
   if initial-condition = 2 [
-    set gg4 (n-values budget [1])
-    set gg4 sentence gg4 (n-values (2000 - budget) [0])
-    set gg2 n-values 2000 [0]
-    set gg3 n-values 2000 [0]
+    set gg2 (n-values budget [1])
+    set gg2 sentence gg2 (n-values (2000 - budget) [0])
     set gg1 n-values 2000 [0]
+    set gg3 n-values 2000 [0]
+    set gg4 n-values 2000 [0]
   ]
   if initial-condition = 3 [
+    set gg3 (n-values budget [1])
+    set gg3 sentence gg3 (n-values (2000 - budget) [0])
+    set gg1 n-values 2000 [0]
+    set gg2 n-values 2000 [0]
+    set gg4 n-values 2000 [0]
+  ]
+  if initial-condition = 4 [
+    set gg4 (n-values budget [1])
+    set gg4 sentence gg4 (n-values (2000 - budget) [0])
+    set gg1 n-values 2000 [0]
+    set gg2 n-values 2000 [0]
+    set gg3 n-values 2000 [0]
+  ]
+  if initial-condition = 5 [
     set gg1 n-values 2000 [0]
     set gg2 n-values 2000 [0]
     set gg3 n-values 2000 [0]
@@ -133,10 +147,10 @@ to go
   if ticks > 500 [
     set mf_current mean [tf] of turtles
     if mf_current - mf_old <= threshold [
-    ;print [g1] of max-one-of turtles [tf]
-    ;print [g2] of max-one-of turtles [tf]
-    ;print [g3] of max-one-of turtles [tf]
-    ;print [g4] of max-one-of turtles [tf]
+    print [g1] of max-one-of turtles [tf]
+    print [g2] of max-one-of turtles [tf]
+    print [g3] of max-one-of turtles [tf]
+    print [g4] of max-one-of turtles [tf]
       print [tf] of max-one-of turtles [tf]
     print timer
     stop
@@ -497,8 +511,8 @@ CHOOSER
 241
 initial-condition
 initial-condition
-1 2 3
-2
+1 2 3 4 5
+4
 
 SLIDER
 379
@@ -860,7 +874,7 @@ NetLogo 6.0.2
 @#$#@#$#@
 @#$#@#$#@
 <experiments>
-  <experiment name="experiment2" repetitions="1" runMetricsEveryStep="false">
+  <experiment name="experiment2" repetitions="10" runMetricsEveryStep="false">
     <setup>setup</setup>
     <go>go</go>
     <metric>[g1] of max-one-of turtles [tf]</metric>
@@ -871,7 +885,10 @@ NetLogo 6.0.2
     <metric>timer</metric>
     <enumeratedValueSet variable="initial-condition">
       <value value="1"/>
+      <value value="2"/>
       <value value="3"/>
+      <value value="4"/>
+      <value value="5"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="population-size">
       <value value="2000"/>
