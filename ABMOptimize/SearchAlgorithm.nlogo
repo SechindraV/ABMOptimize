@@ -1,8 +1,8 @@
 ;; Each potential solution is represented by a turtle. Ant algorithm Do a longer search at the beginning and then;
 ;; check if the optimization produces better results than the search algorithm.
-extensions[profiler]
-
-Particles-own[
+extensions[profiler r]
+;__includes ["setup.nls" "value_functions.nls"]
+turtles-own[
   g1 ; genome list for action 1
   g2 ; genome list for action 2
   g3 ; genome list for action 3
@@ -30,56 +30,115 @@ globals [
   strategy
   mf_old ;mean fitness at t-1
   mf_current ; mean fitness at t
+  N_neighborhoods
+  sorted_ID_filter
 ]
 ;;create different patch-distances for each action, different costs, different budgets
-to setup_optimizeParticles
+to setup
+  clear-all
+  r:eval "require(ecr)"
+  profiler:reset
+  profiler:start
+  random-seed 12345
+  set budget 200
+  ;set budget n-values 4 [9500000000 + random-float 5 ]
   set strategy [[1 0 0 0][0 1 0 0][0 0 1 0][0 0 0 1]]
+  ;print r:get "rnorm(1)"
+  set pd1 []
+  set pd2 []
+  set pd3 []
+  set pd4 []
   set gg1 []
   set gg2 []
   set gg3 []
   set gg4 []
+  setup-d
+  doNondominatedSorting
   setup-genome
-  setup-Particles
+  setup-turtles
+  ;ask one-of turtles [mutate_horizontalstrategies mutate_verticalstrategies]
+  ;profiler:stop
+  ;print profiler:report
+  reset-ticks
+end
+
+to setup-d
+  let i 0
+  while [i < patches-num] [
+;    set pd1 lput (i / patches-num) pd1
+;    set pd2 lput (random-float (i / patches-num)) pd2
+;    set pd3 lput (1 - (i / patches-num)) pd3
+;    set pd4 lput (random-float (1 - (i / patches-num))) pd4
+    set pd1 lput random-float 1 pd1
+    set pd2 lput random-float 1 pd2
+    set pd3 lput random-float 1 pd3
+    set pd4 lput random-float 1 pd4
+    set i i + 1
+  ]
+end
+
+to doNondominatedSorting
+  ;print pd1
+  r:put "dr1" pd1
+  r:put "dr2" pd2
+  r:put "dr3" pd3
+  r:put "dr4" pd4
+  ;r:put "id_so" ID_sort
+  r:put "tau_r" tau_ndom
+  r:eval "dm<-matrix(c(dr1,dr2,dr3,dr4),nrow=4,byrow=TRUE)"
+  r:eval "r<-doNondominatedSorting(dm)$ranks"
+  set sorted_ID_filter r:get "rep(1,length(dr1)) * (r>tau_r)"
+  set pd1 r:get "dr1[which(r>tau_r)]"
+  set pd2 r:get "dr2[which(r>tau_r)]"
+  set pd3 r:get "dr3[which(r>tau_r)]"
+  set pd4 r:get "dr4[which(r>tau_r)]"
+  set N_neighborhoods sum sorted_ID_filter
+  print r:get "doNondominatedSorting(dm)$ranks"
+  ;print sorted_ID_filter
+  print N_neighborhoods
+;#############################################################################################################################################
+;#############################################################################################################################################
 end
 
 to setup-genome
-  if initial-condition = 1 [
-    set gg1 (n-values budget [1])
-    set gg1 sentence gg1 (n-values (2000 - budget) [0])
-    set gg2 n-values 2000 [0]
-    set gg3 n-values 2000 [0]
-    set gg4 n-values 2000 [0]
-  ]
-  if initial-condition = 2 [
-    set gg2 (n-values budget [1])
-    set gg2 sentence gg2 (n-values (2000 - budget) [0])
-    set gg1 n-values 2000 [0]
-    set gg3 n-values 2000 [0]
-    set gg4 n-values 2000 [0]
-  ]
-  if initial-condition = 3 [
-    set gg3 (n-values budget [1])
-    set gg3 sentence gg3 (n-values (2000 - budget) [0])
-    set gg1 n-values 2000 [0]
-    set gg2 n-values 2000 [0]
-    set gg4 n-values 2000 [0]
-  ]
-  if initial-condition = 4 [
-    set gg4 (n-values budget [1])
-    set gg4 sentence gg4 (n-values (2000 - budget) [0])
-    set gg1 n-values 2000 [0]
-    set gg2 n-values 2000 [0]
-    set gg3 n-values 2000 [0]
-  ]
+;  if initial-condition = 1 [
+;    set gg1 (n-values budget [1])
+;    set gg1 sentence gg1 (n-values (patches-num - budget) [0])
+;    set gg2 n-values patches-num [0]
+;    set gg3 n-values patches-num [0]
+;    set gg4 n-values patches-num [0]
+;  ]
+;  if initial-condition = 2 [
+;    set gg2 (n-values budget [1])
+;    set gg2 sentence gg2 (n-values (patches-num - budget) [0])
+;    set gg1 n-values patches-num [0]
+;    set gg3 n-values patches-num [0]
+;    set gg4 n-values patches-num [0]
+;  ]
+;  if initial-condition = 3 [
+;    set gg3 (n-values budget [1])
+;    set gg3 sentence gg3 (n-values (patches-num - budget) [0])
+;    set gg1 n-values patches-num [0]
+;    set gg2 n-values patches-num [0]
+;    set gg4 n-values patches-num [0]
+;  ]
+;  if initial-condition = 4 [
+;    set gg4 (n-values budget [1])
+;    set gg4 sentence gg4 (n-values (patches-num - budget) [0])
+;    set gg1 n-values patches-num [0]
+;    set gg2 n-values patches-num [0]
+;    set gg3 n-values patches-num [0]
+;  ]
   if initial-condition = 5 [
-    set gg1 n-values 2000 [0]
-    set gg2 n-values 2000 [0]
-    set gg3 n-values 2000 [0]
-    set gg4 n-values 2000 [0]
+    set gg1 n-values N_neighborhoods [0]
+    set gg2 n-values N_neighborhoods [0]
+    set gg3 n-values N_neighborhoods [0]
+    set gg4 n-values N_neighborhoods [0]
     let i 0
     while [i < budget] [
      let nloc random 4
-     let ng1 random 2000 - 1
+     let ng1 random (N_neighborhoods - 1)
+      ;print ng1
      if nloc = 0 [set gg1 replace-item ng1 gg1 1]
      if nloc = 1 [set gg2 replace-item ng1 gg2 1]
      if nloc = 2 [set gg3 replace-item ng1 gg3 1]
@@ -89,8 +148,8 @@ to setup-genome
   ]
 end
 
-to setup-Particles
-  ask Particles [
+to setup-turtles
+  create-turtles population-size [
     set g1 gg1
     set g2 gg2
     set g3 gg3
@@ -99,7 +158,7 @@ to setup-Particles
     set f2 (map [[a b] -> a * b] g2 pd2)
     set f3 (map [[a b] -> a * b] g3 pd3)
     set f4 (map [[a b] -> a * b] g4 pd4)
-    et sf1 sum(f1)
+    set sf1 sum(f1)
     set sf2 sum(f2)
     set sf3 sum(f3)
     set sf4 sum(f4)
@@ -107,16 +166,56 @@ to setup-Particles
   ]
  end
 
-to replicate-Particles ; a quarter of the players with higher outcome reproduce and generate a new players with the same strategy but a single mutation
-  let old-generation Particles with [true]
-  ask max-n-of round (count Particles / mutation-fraction) Particles [tf]   ;first reproduce and then kill
+to calculate-fitness
+  ask turtles [
+    set f1 (map [[a b] -> a * b] g1 pd1)
+    set f2 (map [[a b] -> a * b] g2 pd2)
+    set f3 (map [[a b] -> a * b] g3 pd3)
+    set f4 (map [[a b] -> a * b] g4 pd4)
+    set sf1 sum(f1)
+    set sf2 sum(f2)
+    set sf3 sum(f3)
+    set sf4 sum(f4)
+    set tf sf1 + sf2 + sf3 + sf4
+  ]
+end
+to go
+ ; if ticks = 3 [stop]
+  if ticks = 1 [reset-timer]
+  ;profiler:reset
+  ;profiler:start
+  if budget = 0 [stop]
+  ;print count turtles
+  if ticks > 500 [set mf_old mean [tf] of turtles]
+  replicate-turtles
+  if ticks > 500 [
+    set mf_current mean [tf] of turtles
+    if mf_current - mf_old <= threshold [
+    print [g1] of max-one-of turtles [tf]
+    print [g2] of max-one-of turtles [tf]
+    print [g3] of max-one-of turtles [tf]
+    print [g4] of max-one-of turtles [tf]
+    print [tf] of max-one-of turtles [tf]
+    print timer
+    stop
+    ]
+  ]
+  tick
+  ;print timer
+  ;profiler:stop
+  ;print profiler:report
+end
+
+to replicate-turtles ; a quarter of the players with higher outcome reproduce and generate a new players with the same strategy but a single mutation
+  let old-generation turtles with [true]
+  ask max-n-of mutant-size turtles [tf]   ;first reproduce and then kill
   [
     hatch 1[
         mutate_horizontalstrategies
         mutate_verticalstrategies
     ]
   ]
-  ask min-n-of round (count old-generation / mutation-fraction) old-generation [tf]  ;kills only old population
+  ask min-n-of mutant-size old-generation [tf]  ;kills only old population
   [
     die
   ]
@@ -125,8 +224,8 @@ end
 to mutate_horizontalstrategies ;horizontal swapping of genome items
   ;let ng1 random (length g1 - 1)
   ;let ng2 random (length g1 - 1)
-  let ng1 random (2000 - 1)
-  let ng2 random (2000 - 1)
+  let ng1 random (N_neighborhoods - 1)
+  let ng2 random (N_neighborhoods - 1)
   let nv1 item ng1 g1 ; copying old values of genome into variables nv_i
   let nv2 item ng1 g2
   let nv3 item ng1 g3
@@ -160,7 +259,7 @@ to mutate_horizontalstrategies ;horizontal swapping of genome items
 end
 to mutate_verticalstrategies ;vertical swapping of genome items between patches
   let nloc n-of 2 [1 2 3 4]
-  let ng1 random (2000 - 1)
+  let ng1 random (N_neighborhoods - 1)
   if (item 0 nloc = 1 and item 1 nloc = 2) or (item 0 nloc = 2 and item 1 nloc = 1)[
     let nv1 item ng1 g1
     let nv2 item ng1 g2
@@ -230,7 +329,7 @@ to mutate_verticalstrategies ;vertical swapping of genome items between patches
 end
 to change-landscape
   let i 0
-  while [i < 2000] [
+  while [i < patches-num] [
     set pd1 replace-item i pd1 random-float 1
     set pd2 replace-item i pd2 random-float 1
     set pd3 replace-item i pd3 random-float 1
@@ -242,32 +341,19 @@ to profile
 setup
 profiler:reset
 profiler:start
-repeat 20000 [go]
+repeat 2000 [go]
 profiler:stop
 print profiler:report
-end
-
-to-report optimization [budget pd1 pd2 pd3 pd4]
-  setup_optimizeParticles
-  while mf_current - mf_old >= threshold [
-    set mf_old mean [tf] of Particles
-    replicate-Particles
-    set mf_current mean [tf] of Particles
-  ]
-  report [g1] of max-one-of Particles [tf]
-  report [g2] of max-one-of Particles [tf]
-  report [g3] of max-one-of Particles [tf]
-  report [g4] of max-one-of Particles [tf]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
 583
 65
-659
-108
+983
+270
 -1
 -1
-5.73
+32.7
 1
 10
 1
@@ -296,7 +382,7 @@ population-size
 population-size
 0
 100000
-2000.0
+750.0
 10
 1
 NIL
@@ -397,7 +483,7 @@ threshold
 threshold
 0
 0.1
-6.5E-4
+1.5E-20
 0.00001
 1
 NIL
@@ -477,15 +563,56 @@ SLIDER
 91
 551
 124
-mutation-fraction
-mutation-fraction
+mutant-size
+mutant-size
 0
 100
-50.0
+35.0
 1
 1
 NIL
 HORIZONTAL
+
+SLIDER
+353
+187
+525
+220
+patches-num
+patches-num
+0
+2500
+2500.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+419
+530
+591
+563
+tau_ndom
+tau_ndom
+0
+100
+8.0
+1
+1
+NIL
+HORIZONTAL
+
+MONITOR
+716
+550
+841
+595
+NIL
+N_neighborhoods
+17
+1
+11
 
 @#$#@#$#@
 ## WHAT IS IT?
@@ -832,30 +959,25 @@ NetLogo 6.0.2
 @#$#@#$#@
 @#$#@#$#@
 <experiments>
-  <experiment name="experiment2" repetitions="10" runMetricsEveryStep="false">
+  <experiment name="experiment2" repetitions="1" runMetricsEveryStep="false">
     <setup>setup</setup>
     <go>go</go>
-    <metric>[g1] of max-one-of turtles [tf]</metric>
-    <metric>[g2] of max-one-of turtles [tf]</metric>
-    <metric>[g3] of max-one-of turtles [tf]</metric>
-    <metric>[g4] of max-one-of turtles [tf]</metric>
     <metric>[tf] of max-one-of turtles [tf]</metric>
     <metric>timer</metric>
     <enumeratedValueSet variable="initial-condition">
-      <value value="1"/>
-      <value value="2"/>
-      <value value="3"/>
-      <value value="4"/>
       <value value="5"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="population-size">
+      <value value="750"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="mutant-size">
+      <value value="35"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="patches-num">
+      <value value="1000"/>
+      <value value="1500"/>
       <value value="2000"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="threshold">
-      <value value="6.5E-4"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="mutation-fraction">
-      <value value="50"/>
+      <value value="2500"/>
     </enumeratedValueSet>
   </experiment>
 </experiments>

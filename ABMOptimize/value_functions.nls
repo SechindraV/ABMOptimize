@@ -1,0 +1,597 @@
+;#############################################################################################################################################
+;#############################################################################################################################################
+;normalize-criteria-values;
+to-report Value-Function [criteria_value xcuts criteria_categories criterium_max ycuts]    ;This function reports a standarized value for the relationship between value of criteria and motivation to act
+  ;criteria_value the value of a biophysical variable in its natural scale
+  ;xcuts a list of values with the proportion of the biofisical variable that reflects on the cut-offs to define the limits of the range in the linguistic scale
+  ;criteria_categories list of strings that define the lisguistic scale associated with a biobisical variable
+  ;criterium_max the ideal or anti ideal point of the criteria defined based on the linguistic scale (e.g. intolerable ~= anti-ideal)
+  ;ycuts a list of standard values to map the natural scales
+;  let r 1
+;  let so criterium_max / ((1 + r) ^ 5)
+;  let xcuts_wfp map [a -> ((1 + r) ^ a) * so](list 1 2 3 4)
+;  ;print (list (lput criterium_max xcuts_wfp) (list 1 2 3 4 5))
+;  set xcuts_wfp lput so xcuts_wfp
+;  if criteria_value > (item 3 xcuts_wfp) [set SM (item 4 ycuts)]
+;  if criteria_value > (item 2 xcuts_wfp) and criteria_value <= (item 3 xcuts_wfp) [set SM (item 3 ycuts)]
+;  if criteria_value > (item 1 xcuts_wfp) and criteria_value <= (item 2 xcuts_wfp) [set SM (item 2 ycuts)]
+;  if criteria_value > (item 0 xcuts_wfp) and criteria_value <= (item 1 xcuts_wfp) [set SM (item 1 ycuts)]
+;  if criteria_value <= (item 0 xcuts_wfp) [set SM (item 0 ycuts)]
+;
+;
+
+  if criteria_value > (item 3 xcuts) * criterium_max [set SM (item 4 ycuts)]
+  if criteria_value > (item 2 xcuts) * criterium_max and criteria_value <= (item 3 xcuts) * criterium_max [set SM (item 3 ycuts)]
+  if criteria_value > (item 1 xcuts) * criterium_max and criteria_value <= (item 2 xcuts) * criterium_max [set SM (item 2 ycuts)]
+  if criteria_value > (item 0 xcuts) * criterium_max and criteria_value <= (item 1 xcuts) * criterium_max [set SM (item 1 ycuts)]
+  if criteria_value <= (item 0 xcuts) * criterium_max [set SM (item 0 ycuts)]
+  Report SM  ;return a list of
+end
+
+;#############################################################################################################################################
+;normalize-criteria-values;
+to-report Value-Function_WF [criteria_value xcuts criteria_categories criterium_max ycuts]    ;This function reports a standarized value for the relationship between value of criteria and motivation to act
+  ;criteria_value the value of a biophysical variable in its natural scale
+  ;xcuts a list of values with the proportion of the biofisical variable that reflects on the cut-offs to define the limits of the range in the linguistic scale
+  ;criteria_categories list of strings that define the lisguistic scale associated with a biobisical variable
+  ;criterium_max the ideal or anti ideal point of the criteria defined based on the linguistic scale (e.g. intolerable ~= anti-ideal)
+  ;ycuts a list of standard values to map the natural scales
+  let r 1
+  let so criterium_max / ((1 + r) ^ 5)
+  let xcuts_wfp map [a -> ((1 + r) ^ a) * so](list 1 2 3 4)
+  ;print (list (lput criterium_max xcuts_wfp) (list 1 2 3 4 5))
+  set xcuts_wfp lput so xcuts_wfp
+  if criteria_value > (item 3 xcuts_wfp) [set SM (item 4 ycuts)]
+  if criteria_value > (item 2 xcuts_wfp) and criteria_value <= (item 3 xcuts_wfp) [set SM (item 3 ycuts)]
+  if criteria_value > (item 1 xcuts_wfp) and criteria_value <= (item 2 xcuts_wfp) [set SM (item 2 ycuts)]
+  if criteria_value > (item 0 xcuts_wfp) and criteria_value <= (item 1 xcuts_wfp) [set SM (item 1 ycuts)]
+  if criteria_value <= (item 0 xcuts_wfp) [set SM (item 0 ycuts)]
+;
+;
+
+   Report SM  ;return a list of
+end
+
+to update_criteria_and_valueFunctions_WaterOperator    ;;update the biphisical value of variables used as criterias and update the value function
+  let i 0 ; i is the index of each criteria
+  (foreach criteria_names
+    [? ->
+      ;###########################################################
+      if ? = "Antiguedad"[
+        if breed = alternatives_WaterOperator_AB[
+          let attribute (([Antiguedad-infra_Ab] of myself) / 365)
+         let min_x 120
+          let alpha_vf 80
+          let y_vf exp ( - ((0 - min_x) / alpha_vf) ^ 2)
+          let yy_vf exp ( - ((120 - min_x) / alpha_vf) ^ 2)
+          let svf 1 - ((exp ( - ((attribute - min_x) / alpha_vf) ^ 2) - y_vf) / (yy_vf - y_vf))
+          set rescaled_criteria_values replace-item i rescaled_criteria_values svf
+        ]
+        if breed = alternatives_WaterOperator_d[
+          let attribute ([Antiguedad-infra_d] of myself / 365)
+          let min_x 120
+          let alpha_vf 80
+          let y_vf exp ( - ((0 - min_x) / alpha_vf) ^ 2)
+          let yy_vf exp ( - ((120 - min_x) / alpha_vf) ^ 2)
+          let svf 1 - ((exp ( - ((attribute - min_x) / alpha_vf) ^ 2) - y_vf) / (yy_vf - y_vf))
+          if attribute > 120 [set svf 0]
+          if attribute < 0 [set svf 1]    
+          set rescaled_criteria_values replace-item i rescaled_criteria_values svf
+          
+        ]
+       ]
+      ;###########################################################
+      if ? = "Capacidad"[
+        if breed = alternatives_WaterOperator_AB[
+          let attribute [Capacidad_Ab] of myself
+          set rescaled_criteria_values replace-item i rescaled_criteria_values 1 ;replace-item i rescaled_criteria_values VF3 (100 * (item i criteria_values))
+
+        ]
+        if breed = alternatives_WaterOperator_D [
+          let attribute [Capacidad_D] of myself
+          let p1 0.174916383				
+          let y_vf exp (p1 * 0)
+          let yy_vf exp (p1 * 15)
+          let svf (exp (p1 * (attribute)) - y_vf) / (yy_vf - y_vf)
+          if attribute > 15  [set svf 1]
+          if attribute < 0  [set svf 0]
+          set rescaled_criteria_values replace-item i rescaled_criteria_values svf
+          ask myself [set value_function_capasity [item i rescaled_criteria_values] of myself]
+        ]
+      ]
+      ;###########################################################
+      if ? = "Falta"[ ;###check that the function correspond to the scale of the variable measured. lack or
+        if breed = alternatives_WaterOperator_AB[
+
+          let attribute 100 * [houses_with_abastecimiento] of myself
+          ;set criteria_values replace-item i criteria_values attribute
+          let p1 0.3457691				
+          let y_vf exp (p1 * 0)
+          let yy_vf exp (p1 * 100)
+          let svf (exp (p1 * (attribute)) - y_vf) / (yy_vf - y_vf)
+          set rescaled_criteria_values replace-item i rescaled_criteria_values svf
+        ]
+        if breed = alternatives_WaterOperator_d[
+          let attribute 100 * [houses_with_dranage] of myself
+        let p1 0.3457691				
+        let y_vf exp (p1 * 0)
+        let yy_vf exp (p1 * 100)
+        let svf (exp (p1 * (attribute)) - y_vf) / (yy_vf - y_vf)
+        set rescaled_criteria_values replace-item i rescaled_criteria_values svf
+        ]
+      ]
+      ;###########################################################
+      if ? = "Falla" [
+        if breed = alternatives_WaterOperator_AB[
+          let attribute [Falla_Ab] of myself
+          set rescaled_criteria_values replace-item i rescaled_criteria_values (1 - attribute) 
+        
+        ]
+        if breed = Alternatives_WaterOperator_D[
+          let attribute [Falla_d] of myself  
+          set rescaled_criteria_values replace-item i rescaled_criteria_values (1 - attribute) 
+        ]
+      ]
+
+      ;###########################################################
+      if ? = "Escasez de agua"[
+
+        ;      ;set criteria_values replace-item i criteria_values [scarcity] of myself
+        if-else name_action = "Distribucion_agua"[
+        let attribute [days_wno_water] of myself
+           let p1 0.06233948
+          let y_vf exp (-(28 * p1))
+          let yy_vf exp (-(0 * p1))
+          let svf (exp (-(attribute * p1))  - y_vf) / (yy_vf - y_vf)
+          set rescaled_criteria_values replace-item i rescaled_criteria_values svf
+          ask myself [set value_function_scarcity [item i rescaled_criteria_values] of myself]
+        ]
+        [
+          let attribute [scarcity_annual] of myself
+          let p1 0.020455577
+          let y_vf exp (-(336 * p1))
+          let yy_vf exp (-(0 * p1))
+          let svf (exp (-(attribute * p1))  - y_vf) / (yy_vf - y_vf)
+          set rescaled_criteria_values replace-item i rescaled_criteria_values svf
+        ]
+      ]
+      ;###########################################################
+      if ? = "Inundaciones" and (months = 12 or ticks < 10) [  ;grandes inundaciones !!need to change variable for criteria
+        let attribute  [Flooding] of myself
+        let svf   ifelse-value (attribute > 0)[0][1]      
+        set rescaled_criteria_values replace-item i rescaled_criteria_values svf
+      ]
+      ;###########################################################
+      if ? = "Presion social" and (months = 12 or ticks < 10) [
+        let attribute [Presion_social_annual] of myself
+        set rescaled_criteria_values replace-item i rescaled_criteria_values VF4 attribute
+      ]
+
+      ;###########################################################
+      if ? = "Hundimientos"[
+        let attribute [hundimiento] of myself
+        let p1 26.06766112					
+        let y_vf 1 - exp ((35 - 10) / p1 )
+        let yy_vf 1 - exp ((0 - 10) / p1 )
+        let svf ((1 - exp ((attribute - 10) / p1 )) - y_vf) / (yy_vf - y_vf)
+        if attribute > 35 [set svf 0]  
+        set rescaled_criteria_values replace-item i rescaled_criteria_values svf 
+      ]
+      ;###########################################################
+      if ? = "Encharcamientos" [
+        let attribute [ponding] of myself
+        ;set criteria_values replace-item i criteria_values attribute
+        let p1 30
+        let y_vf exp (-((100 / p1) ^ 2))
+        let yy_vf exp (-((0 / p1) ^ 2))
+        let svf (exp (-((attribute / p1) ^ 2))  - y_vf) / (yy_vf - y_vf)        
+        set rescaled_criteria_values replace-item i rescaled_criteria_values svf
+      ]
+        ;###########################################################
+        if ? = "Precipitacion"[
+           let attribute [precipitation] of myself
+          let p1 742.8737773									
+          let y_vf 1 - exp ((1300 - 10) / p1 )
+          let yy_vf 1 - exp ((0 - 10) / p1 )
+          let svf ((1 - exp ((attribute - 10) / p1 )) - y_vf) / (yy_vf - y_vf)
+          if attribute > 1300 [set svf 0]  
+          set rescaled_criteria_values replace-item i rescaled_criteria_values svf
+        ]
+         ;###########################################################
+        if ? = "Escurrimiento"[
+         let attribute  [Escurri] of myself
+        let y_vf  exp(-(((0 - 30000) / 20000) ^ 2))
+        let yy_vf exp(-(( (30000 - 30000) / 20000) ^ 2))
+        let svf 1 -(exp(-(((attribute - 30000) / 20000) ^ 2)) - y_vf) / (yy_vf + y_vf)
+        if attribute > 30000 [set svf 0]  
+        set rescaled_criteria_values replace-item i rescaled_criteria_values svf     
+      ]
+        ;###########################################################
+        
+        if ? = "Presion_hidraulica"[
+          let attribute [Presion_hidraulica] of myself
+          set rescaled_criteria_values replace-item i rescaled_criteria_values (Value-Function attribute [0.5 0.75 0.875 0.937] ["" "" "" ""] Presion_hidraulica_max [1 0.8 0.6 0.4 0.2])
+        ]
+        
+        ;###########################################################
+        if ? = "Gasto_hidraulico"[
+          let attribute [Gasto_hidraulico] of myself
+          set rescaled_criteria_values replace-item i rescaled_criteria_values (Value-Function attribute [0.0625 0.125 0.25 0.5] ["" "" "" ""] Gasto_hidraulico_max [0.2 0.4 0.6 0.8 1])
+        ]
+        ;###########################################################
+        if ? = "Basura"[
+          let attribute [garbage] of myself 
+          let p1 2.6514
+          let p2 5000
+          let y_vf (exp (- ((0 - p1) / p2) ^ 2))
+          let yy_vf (exp (- ((2.6514 - p1) / p2) ^ 2))
+          let svf 1 - ((exp (- ((attribute - p1) / p2) ^ 2))  - y_vf) / (yy_vf - y_vf)
+          set rescaled_criteria_values replace-item i rescaled_criteria_values  svf
+        ]
+        ;###########################################################
+        if ? = "Monto"[
+   ;       print  [Monto] of myself
+          set rescaled_criteria_values replace-item i rescaled_criteria_values 1;(Value-Function (item i criteria_values) [0.5 0.75 0.875 0.937] ["" "" "" ""] (item i criteria_max)  [1 0.8 0.6 0.4 0.2])
+        ]
+        ;###########################################################
+        if ? = "Calidad_agua"[
+          set rescaled_criteria_values replace-item i rescaled_criteria_values 1;(Value-Function (item i criteria_values) [0.5 0.75 0.875 0.937] ["" "" "" ""] (item i criteria_max)  [1 0.8 0.6 0.4 0.2])
+        ]
+        ;###########################################################
+        if ? = "Abastecimiento"[
+          let attribute [Abastecimiento] of myself
+          set rescaled_criteria_values replace-item i rescaled_criteria_values (Value-Function attribute [0.0625 0.125 0.25 0.5] ["" "" "" ""] Abastecimiento_max [0.2 0.4 0.6 0.8 1])
+        ]
+        ;###########################################################
+        if ? = "Peticion de Delegaciones"[
+          let attribute [Peticion_Delegacional] of myself   
+          ;set criteria_values replace-item i criteria_values attribute
+          let svf 1 - attribute
+          set rescaled_criteria_values replace-item i rescaled_criteria_values svf
+        ]
+        ;###########################################################
+        if ? = "Peticiones de usuarios"[
+         let attribute [peticion_usuarios] of myself
+          let svf 1 - (attribute / peticion_usuarios_max)   
+          set rescaled_criteria_values replace-item i rescaled_criteria_values  svf   ;(Value-Function (item i criteria_values) [0.0625 0.125 0.25 0.5] ["" "" "" ""] (item i criteria_max)  [0.2 0.4 0.6 0.8 1])
+        ]
+        ;###########################################################
+        if ? = "Presion de medios"[
+           let attribute [Presion_de_medios] of myself
+          let p1 0.005268212					
+          let y_vf (exp (- 0 * p1))
+          let yy_vf (exp (- 600 * p1))
+          let svf ((exp (- attribute * p1))  - y_vf) / (yy_vf - y_vf)
+          if attribute > 600 [set svf 0]
+          set rescaled_criteria_values replace-item i rescaled_criteria_values svf  
+        ]
+        ;###########################################################
+      set i i + 1
+    ]
+  )
+end
+
+to update_criteria_and_valueFunctions_residentes
+  let i 0
+  foreach criteria_names 
+    [a ->
+        ;###########################################################
+        if a = "Crecimiento urbano"[
+        let attribute [urban_growth] of myself 
+          set rescaled_criteria_values replace-item i rescaled_criteria_values (Value-Function attribute [0.5 0.75 0.875 0.937] ["" "" "" ""] urban_growth_max [1 0.8 0.6 0.4 0.2])
+        ]
+        ;###########################################################
+      if a = "Contaminacion de agua"[
+        let attribute [water_quality] of myself
+        ;set criteria_values replace-item i criteria_values attribute
+        let p1 0.3457691
+        let y_vf exp (0 * p1)
+        let yy_vf exp (100 * p1)
+        let svf ((exp (attribute * p1 )) - y_vf) / (yy_vf - y_vf)
+        set rescaled_criteria_values replace-item i rescaled_criteria_values svf 
+      ]
+        ;###########################################################
+        if a = "Obstruccion de alcantarillado"[
+       let attribute [garbage] of myself 
+          let p1 2.6514
+          let p2 5000
+          let y_vf (exp (- ((0 - p1) / p2) ^ 2))
+          let yy_vf (exp (- ((2.6514 - p1) / p2) ^ 2))
+          let svf 1 - ((exp (- ((attribute - p1) / p2) ^ 2))  - y_vf) / (yy_vf - y_vf)
+          set rescaled_criteria_values replace-item i rescaled_criteria_values  svf  
+      ]
+      ;###########################################################
+      if a = "Salud"[
+        let attribute [health] of myself
+        let p1 15.848931
+        let yy_vf 1 - exp ((0 - 10) / p1)
+        let y_vf 1 - exp ((100 - 10) / p1)
+        let svf ((1 - exp ((attribute - 10) / p1)) - y_vf) / (yy_vf - y_vf)
+  
+        set rescaled_criteria_values replace-item i rescaled_criteria_values svf
+   
+        ]
+        ;###########################################################
+        if a = "Escasez de agua"[
+        let attribute [days_wno_water] of myself
+        set rescaled_criteria_values ifelse-value (attribute > 12) [replace-item i rescaled_criteria_values 1][replace-item i rescaled_criteria_values 0]
+        ]
+      ;###########################################################
+      if a = "Inundaciones"[
+        let attribute [ponding] of myself
+        let p1 30
+        let y_vf exp (-((100 / p1) ^ 2))
+        let yy_vf exp (-((0 / p1) ^ 2))
+        let svf (exp (-((attribute / p1) ^ 2))  - y_vf) / (yy_vf - y_vf)        
+        set rescaled_criteria_values replace-item i rescaled_criteria_values svf
+
+          if name_action = "Captacion de agua" or name_action = "Compra de agua" or name_action = "Movilizaciones"[
+            set rescaled_criteria_values replace-item i rescaled_criteria_values 0
+          ]
+        ]
+        ;###########################################################
+      if a = "agua insuficiente" [
+        let attribute [days_wno_water] of myself
+        set rescaled_criteria_values ifelse-value(attribute > 12) [replace-item i rescaled_criteria_values 1][replace-item i rescaled_criteria_values 0]
+      ]
+        ;###########################################################
+      if a = "Desviacion de agua" [
+        let attribute [desviacion_agua] of myself 
+        set rescaled_criteria_values replace-item i rescaled_criteria_values (Value-Function attribute [0.5 0.75 0.875 0.937]  ["" "" "" ""] desviacion_agua_max  [1 0.8 0.6 0.4 0.2])
+        if name_action = "Modificacion vivienda"[
+          set rescaled_criteria_values replace-item i rescaled_criteria_values 0
+        ]
+        ]
+        ;###########################################################
+      if a = "Falta de infraestructura" [
+        
+        if name_action = "Modificacion vivienda"[
+          let attribute 100 * [houses_with_dranage] of myself
+          let p1 0.3457691				
+          let y_vf exp (p1 * 0)
+          let yy_vf exp (p1 * 100)
+          let svf (exp (p1 * (attribute)) - y_vf) / (yy_vf - y_vf)
+          set rescaled_criteria_values replace-item i rescaled_criteria_values svf
+        ]
+        if name_action = "Captacion de agua" or name_action = "Movilizaciones"[
+          
+            let attribute 100 * [houses_with_abastecimiento] of myself
+            let p1 0.3457691				
+            let y_vf exp (p1 * 0)
+            let yy_vf exp (p1 * 100)
+            let svf (exp (p1 * (attribute)) - y_vf) / (yy_vf - y_vf)
+            set rescaled_criteria_values replace-item i rescaled_criteria_values svf
+          ]
+        ]
+        ;###########################################################
+        if a = "Infraestructura insuficiente" [
+          if name_action = "Accion colectiva" [
+            let attribute 100 * [houses_with_abastecimiento] of myself
+            let p1 0.3457691				
+            let y_vf exp (p1 * 0)
+            let yy_vf exp (p1 * 100)
+            let svf (exp (p1 * (attribute)) - y_vf) / (yy_vf - y_vf)
+            set rescaled_criteria_values replace-item i rescaled_criteria_values svf
+          
+        ]
+        if name_action = "Modificacion vivienda"[
+          let attribute 100 * [houses_with_dranage] of myself
+          let p1 0.3457691				
+          let y_vf exp (p1 * 0)
+          let yy_vf exp (p1 * 100)
+          let svf (exp (p1 * (attribute)) - y_vf) / (yy_vf - y_vf)
+          set rescaled_criteria_values replace-item i rescaled_criteria_values svf
+        ]
+          if name_action = "Compra de agua" [
+            let attribute 100 * [houses_with_abastecimiento] of myself
+            ;set criteria_values replace-item i criteria_values attribute
+            let p1 0.3457691				
+            let y_vf exp (p1 * 0)
+            let yy_vf exp (p1 * 100)
+            let svf (exp (p1 * (attribute)) - y_vf) / (yy_vf - y_vf)
+            set rescaled_criteria_values replace-item i rescaled_criteria_values svf
+         ]
+          if name_action = "Captacion de agua" or name_action = "Movilizaciones"[
+         let attribute 100 * [houses_with_abastecimiento] of myself
+            ;set criteria_values replace-item i criteria_values attribute
+            let p1 0.3457691				
+            let y_vf exp (p1 * 0)
+            let yy_vf exp (p1 * 100)
+            let svf (exp (p1 * (attribute)) - y_vf) / (yy_vf - y_vf)
+            set rescaled_criteria_values replace-item i rescaled_criteria_values svf
+             ]
+        ]
+        ;###########################################################
+        if a = "Desperdicio de agua" [
+          let attribute [desperdicio_agua] of myself
+          set rescaled_criteria_values replace-item i rescaled_criteria_values (Value-Function attribute  [0.5 0.75 0.875 0.937]  ["" "" "" ""] desperdicio_agua_max [1 0.8 0.6 0.4 0.2])
+        ]
+         ;###########################################################
+        if a = "Crecimiento de poblacion" [
+          let attribute [poblacion] of myself
+          ;change with update quantity for speed
+          set rescaled_criteria_values replace-item i rescaled_criteria_values (attribute / poblacion_max)
+        ]
+
+        ;###########################################################
+        if a = "Eficacia del servicio" [
+        set rescaled_criteria_values replace-item i rescaled_criteria_values 1
+        ]
+        ;###########################################################
+        if a = "Fugas" [
+          set rescaled_criteria_values replace-item i rescaled_criteria_values 1;replace-item i rescaled_criteria_values (Value-Function (item i criteria_values)  [0.5 0.75 0.875 0.937]  ["" "" "" ""] (item i criteria_max) [1 0.8 0.6 0.4 0.2])
+        ]
+        ;###########################################################
+        if a = "Mala calidad de agua" [
+          let attribute [water_quality] of myself
+          set rescaled_criteria_values replace-item i rescaled_criteria_values (Value-Function attribute [0.5 0.75 0.875 0.937]  ["" "" "" ""] water_quality_max [1 0.8 0.6 0.4 0.2])
+        ]
+        ;###########################################################
+      if a = "Falta de infraestructura" [
+        let attribute 100 * [houses_with_abastecimiento] of myself
+        let p1 0.3457691				
+        let y_vf exp (p1 * 0)
+        let yy_vf exp (p1 * 100)
+        let svf (exp (p1 * (attribute)) - y_vf) / (yy_vf - y_vf)
+        set rescaled_criteria_values replace-item i rescaled_criteria_values svf
+      ]
+         ;###########################################################
+        if a = "Basura" [
+        let attribute [garbage] of myself 
+          let p1 2.6514
+          let p2 5000
+          let y_vf (exp (- ((0 - p1) / p2) ^ 2))
+          let yy_vf (exp (- ((2.6514 - p1) / p2) ^ 2))
+          let svf 1 - ((exp (- ((attribute - p1) / p2) ^ 2))  - y_vf) / (yy_vf - y_vf)
+          set rescaled_criteria_values replace-item i rescaled_criteria_values svf
+        ]
+      
+        set i i + 1
+      ]
+end
+;/normalize-criteria-values;
+;#############################################################################################################################################
+;#############################################################################################################################################
+;calculate-distances-to-ideal-points;
+to-report ideal_distance[alternative_weight rescaled_values criteria-weights exponent]
+  ;this function calcualte a distance to ideal point using compromized programing metric
+  ;arguments:
+
+     ;VF_list: a list of value functions
+     ;weight_list a list of weights from the alternatives criteria links (CA_links)
+     ;h_Cp to control the type of distance h_Cp=2 euclidian; h_Cp=1 manhattan
+  set dist (( alternative_weight * sum (map [[a b] -> (a ^ exponent) * ((1 - b) ^ exponent)] criteria-weights rescaled_values)) ^ (1 / exponent))
+     report dist
+end
+;/calculate-distances-to-ideal-points;
+
+
+;#############################################################################################################################################
+;#############################################################################################################################################
+;Implementation of different value functions
+
+to-report VF1 [attribute] ;value function criterium: edad infrastructure
+  ;min_x: value of attribute x at which y = 0
+  ;attribute: value of attribute x in the census block
+  let min_x 120
+  let alpha_vf 80
+  let y_vf exp ( - ((0 - min_x) / alpha_vf) ^ 2)
+  let yy_vf exp ( - ((120 - min_x) / alpha_vf) ^ 2)
+  let svf 1 - ((exp ( - ((attribute - min_x) / alpha_vf) ^ 2) - y_vf) / (yy_vf - y_vf))
+
+  report svf
+
+end
+
+;#########################################################
+to-report VF2 [attribute];value function criterium health
+  let p1 15.848931
+  let yy_vf 1 - exp ((0 - 10) / p1)
+  let y_vf 1 - exp ((100 - 10) / p1)
+  let svf ((1 - exp ((attribute - 10) / p1)) - y_vf) / (yy_vf - y_vf)
+  report svf
+end
+;#########################################################
+to-report VF3 [attribute] ;value function criterium: capasity
+  let p1 0.032638
+  let y_vf exp (p1 * 0)
+  let yy_vf exp (p1 * 100)
+  let svf (exp (- p1 * attribute) - y_vf) / (yy_vf - y_vf)
+
+  report svf
+end
+;#########################################################
+to-report VF4 [attribute] ;value function criterium: social pressure
+  let p1 20
+  let p2 54
+  let y_vf (exp (- ((0 - p2) / p1) ^ 2))
+  let yy_vf (exp (- ((54 - p2) / p1) ^ 2))
+  let svf ((exp (- ((attribute - p2) / p1) ^ 2))  - y_vf) / (yy_vf - y_vf)
+  report svf
+end
+;#########################################################
+to-report VF5 [attribute] ;value function criterium: scarcity (montly) use for water authority to montly decide where to foucs the efforts of distributing water by other system than pipes
+  let p1 0.06233948
+  let y_vf exp (-(28 * p1))
+  let yy_vf exp (-(0 * p1))
+  let svf (exp (-(attribute * p1))  - y_vf) / (yy_vf - y_vf)
+
+  report svf
+end
+;#########################################################
+to-report VF6 [attribute] ;value function criterium: ponding
+  let p1 80
+  let x_min 0
+  let y_vf exp (-(((100 - x_min) / p1) ^ 2))
+  let yy_vf exp (-(((0 - x_min) / p1) ^ 2))
+  let svf (exp (-(((attribute - x_min) / p1) ^ 2))  - y_vf) / (yy_vf - y_vf)
+  report svf
+end
+;#########################################################
+to-report VF7 [attribute] ;value function criterium: Flooding
+  let p1 1
+  let svf ifelse-value (attribute > p1)[0][1]
+  report svf
+end
+;#########################################################
+to-report VF8 [attribute] ;value function criterium: scarcity (annual) use for water authority to annualy decide where to foucs the efforts to new infrastructure and reparations
+  let p1 0.020455577
+
+;0.006370766
+
+  let y_vf exp (-(336 * p1))
+  let yy_vf exp (-(0 * p1))
+  let svf (exp (-(attribute * p1))  - y_vf) / (yy_vf - y_vf)
+
+  report svf
+end
+
+;#########################################################
+to-report VF9 [attribute] ;value function criterium: garbage or "drainages-clogged"
+  let p1 12546
+  let p2 5000
+  let y_vf (exp (- ((0 - p1) / p2) ^ 2))
+  let yy_vf (exp (- ((12546 - p1) / p2) ^ 2))
+  let svf ((exp (- ((attribute - p1) / p2) ^ 2))  - y_vf) / (yy_vf - y_vf)
+
+  report svf
+end
+;#########################################################
+to-report VF10 [attribute] ;value function criterium: scarcity residents
+  let p1 0.115526234
+
+  let y_vf exp (-(28 * p1))
+  let yy_vf exp (-(0 * p1))
+  let svf (exp (-(attribute * p1))  - y_vf) / (yy_vf - y_vf)
+
+  report svf
+end
+
+;#########################################################
+to-report VF11 [attribute] ;value function criterium: hundimientos (subsidance)
+  let p1 0.537031796
+
+  let y_vf 1 - exp ((1 - 10) / p1 )
+  let yy_vf 1 - exp ((0 - 10) / p1 )
+  let svf ((1 - exp ((attribute - 10) / p1 )) - y_vf) / (yy_vf - y_vf)
+
+  report svf
+end
+;#########################################################
+to-report VF12 [attribute] ;value function criterium: falta (lack of infrastructure)
+  let p1 0.3457691
+								  let y_vf exp (0 * p1)
+  let yy_vf exp (100 * p1)
+  let svf ((exp (attribute * p1 )) - y_vf) / (yy_vf - y_vf)
+
+  report svf
+end
+;#########################################################
+to-report VF13 [attribute] ;value function criterium: calidad de agua (water quality)
+  let p1 0.3457691
+								  let y_vf exp (0 * p1)
+  let yy_vf exp (100 * p1)
+  let svf ((exp (attribute * p1 )) - y_vf) / (yy_vf - y_vf)
+
+  report svf
+end

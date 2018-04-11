@@ -1,0 +1,1923 @@
+;define-global-variables
+globals [
+  timestep                     ;;time step for postgres history
+  Tot_water_Imported_Cutzamala ;;total water that enter to MC every day by importation from Cutzamala. for now a constant in the future connected as a network
+  Tot_water_Imported_Lerma     ;;total water that enter to MC every day by importation from Lerma system. for now a constant int he future connected as a network
+  water_produced               ;;Water produced by the city wells
+  water_imported               ;;Water imported from external watersheds
+  weekly_water_available        ;;total water in a day
+  truck_capasity               ;;capasity for each truck (pipas) to deliver water [mt3]
+  capacidad_cisterna           ;;capasity of an individual water storage devide based on information from residents (compendio de datos funcion de valor)
+  zonas_aquiferas              ;;ID de las zonas aquiferas en MXC
+  count_pozos_initial          ;;number of wells at timestep 1
+  municipios_CVEGEO            ;;names and CVEGEO of municipalities inside DF
+  from_d_to_bombeo
+  ;; agua en tuberias
+  background_fugas             ;; % water lost every day by fugas
+  max-elevation                ;;max altitude
+  min-elevation                ;;max altitude
+  limits_world                 ;;four corners of the netlogo world 
+  ;;############################################################################################################################################
+  SM   ;standarized measure from the value function
+  dist ;the reported value of distance from the ideal point function
+       ;#####################################################################################
+       ;;Government decision-making process
+       ;#####################################################################################
+  
+  ;;RANGE of Biophisical variables
+  ;;Auxiliar variables that define range of value functions for all criteria
+  
+  presion_hidraulica_max        ;;min hydraulic pressure
+  Gasto_hidraulico_max
+  Antiguedad-infra_Ab_max       ;;the area with the oldest infrastructure
+  Antiguedad-infra_D_max        ;;the area with the oldest infrastructure
+  peticion_usuarios_max         ;;maximal importance to the different users
+  desviacion_agua_max           ;;max level of perception of deviation
+  urban_growth_max              ;;max change of popualtion per ageb
+  desperdicio_agua_max          ;;max perception of water being waste
+  eficacia_servicio_max         ;;ideal state of efficancy desired by actors
+  garbage_max                   ;;max level of garbage percived as intolerable
+  Obstruccion_dren_max
+  hundimiento_max              ;;max level of subside
+  infra_abast_max               ;;max % of houses per ageb covered by the water supply network
+  infra_dranage_max             ;;max % of houses per ageb covered by the water dranage network
+  flooding_max                  ;;max level of flooding (encharcamientos) recored over the last 10 years
+  ponding_max
+  precipitation_max             ;;max amount of precipitation recorded
+  falla_Ab_max                 ;;max number of fugas /likage, failure to distribute water in an ageb
+  falla_d_max
+  falta_d_max
+  falta_Ab_max                  ;;max lack of connextion to water
+  max_water_in_mc                  ;;
+  days_wno_water_max            ;;max number of day of an ageb without water
+  Abastecimiento_max            ;;
+  Capacidad_Ab_max                 ;;
+  Capacidad_d_max
+  poblacion_max
+  Peticion_Delegacional_max
+  Peticion_Delegacional_D_max
+  Presion_social_max
+  Presion_social_annual_max
+  Presion_de_medios_max
+  
+  water_quality_max
+  health_max
+  monto_max
+  scarcity_max
+  densidad_pop_max
+  ;#####################################################################################
+  ;;Residents decision metrics max ;variables for plotting distance
+  value_function_numeric_scale_residents
+  scarcity_scale
+  flooding_scale
+  d_Compra_agua_max               ;;distance from ideal point for Compra_agua (buying water)
+  d_Captacion_agua_max            ;;distance from ideal point for Captacion_agua (buying tinaco, ranfall storage)
+  d_Movilizaciones_max            ;;distance from ideal point for Movilizaciones
+  d_Modificacion_vivienda_max     ;;distance from ideal point for Modificacion_vivienda
+  d_Accion_colectiva_max                     ;;distance from ideal point for Accion_colectiva
+                                             ;#WaterOperator decision metrics max
+  d_water_extraction_max
+  d_mantenimiento_max                     ;;distance from ideal point for decision to repare infrastructure
+  d_new_max                            ;;distance from ideal point for decision to create new infrastructure
+  d_new_D_max
+  d_water_distribution_max              ;;distance from ideal point for decision to distribute water
+  d_water_importacion_max
+  d_mantenimiento_D_max
+  ;#####################################################################################
+  ;#####################################################################################
+  ;;Vulnerability
+  ;#####################################################################################
+  Y_F_Max      ;max level of changes made to houses to reduce damage by flooding
+  Vulnerability_F_max
+  Y_S_Max      ;max level of changes made to houses to reduce scarcity
+  Vulnerability_S_max
+  ;#####################################################################################
+  ;;Indicators
+  ;#####################################################################################
+  age_infra_Ab_index
+  age_infra_F_index
+  
+  ;;############################################################################################################################################
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;define geo coded GIS (maps) variables
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  Agebs_map                                                          ;includes economic index water-related infrastructure
+  Agebs_map_full
+  Agebs_map_full_csv
+  Agebs_map_full_csv_list
+  alternatives_CDMX                                                  ;census blocks inside CDMX
+  alternatives_noCDMX
+  sort_AG                                                            ;list of agens sorted by ID
+  sort_AG_noCDMX
+  Limites_delegacionales                                             ;limits of borrows
+  Limites_cuenca                                                     ;limits of the watershed
+  LHland                                                             ;low and highland division of waters based on runoff
+  mascara                                                            ;mask of the area of the work showing in the plot
+  city_image                                                         ;a google image with the terrain
+  pozos_WaterOperator                                                       ;weels for the water supply (piece of infratructure)
+  PozosCMZM_Project
+  PozosPachuca_Project
+  PozosTexcoco_Project
+  PozosChalco_Project
+  zonas_aquif_map
+  elevation                                                          ;elevation of the city
+  Lumbreras_map
+  desalojo_profundo
+  desalojo_primario                                                  ;red de can~erias con connection a casas
+  estaciones_lluvia_SACMEX
+  network_cutzamala                                                  ;large-scale supply network
+  network_lerma                                                      ;large-scale supply network
+  Water_contamination
+  Urban_g                                                        ;change in population, urban coverage, construction or other perception of more pressure to the service of water
+  failure_of_dranage                                                 ;(translated from residents mental model concept "obstruccion de alcantarillado")
+  presion_hidraulica_map                                             ;water in the pipes. related to mean_days_withNo_water and fugas. places with more fugas may have less pressure. places with less pressure would have more mean_days_withNo_water.
+  Presion_de_medios
+    
+  ;;Other auxiliar variables
+  counter
+  days
+  weeks
+  months
+  years
+  ;MCDA imput files
+  MMWaterOperator_D
+  MMWaterOperator_D_limit
+  MMWaterOperator_weighted_D
+  ;;tables
+  contiguous_matrix
+  ;read_data_flooding
+  flood_rain           ;table with probabilities of flooding based on frequqncies and rainfall
+  flood_capacity_riskOldCity
+  flood_capacity_riskNewCity
+  ;read_data_waterscarcity
+  average_day_nowater_perweek
+  IDD  
+  ;optimization variables
+  
+  gg1 ;global genome list for action 1
+  gg2 ;global genome list for action 2
+  gg3 ;global genome list for action 3
+  gg4 ;global genome list for action 4
+  pd1 ;d for action 1
+  pd2 ;d for action 2
+  pd3 ;d for action 3
+  pd4 ;d for action 4
+  pd5;;d for action 5
+  pd6;;d for action 6
+  strategy
+  mf_old ;mean fitness at t-1
+  mf_current ; mean fitness at t
+  N_neighborhoods ;number of neighborhoods with non-dominanat solutions
+  ID_sort ;list of IDs sorted
+  sorted_ID_filter ;boolean list 1 if alternative is don-dominant
+  
+  
+]  ; /globals
+
+;define-type-of-agents
+breed [Agebs Ageb]
+breed [Delegaciones Delegacion]
+;infrastructure
+breed [Rain_Stations Rain_Station]
+breed [Pozos pozo]
+breed [Particles particle]
+breed [Lumbreras Lumbrera]
+breed [drenaje_profundo tramo]
+breed [sewage_nodes sewage_node]
+directed-link-breed [D_pipes D_pipe]
+breed [Alternatives_IZ alternative_IZ]
+breed [Alternatives_IZb alternative_IZb]
+breed [Alternatives_Xo alternative_Xo]
+breed [Alternatives_MC alternative_MC]
+breed [Alternatives_MCb alternative_MCb]
+breed [Alternatives_MCc alternative_MCc]
+breed [alternatives_WaterOperator_AB alternative_WaterOperator_Ab]
+breed [Alternatives_WaterOperator_D alternative_WaterOperator_D]
+breed [Alternatives_OCVAM alternative_OCVAM]
+breed [Alternatives_DELEGATIONS alternative_DELEGATION]
+
+;#############################################################################################################################################
+;define-agents-attributes
+;#############################################################################################################################################
+
+patches-own[
+  altitude          ;; real altitude
+  Ageb_ID           ;; AGEB in
+  colonias_ID       ;; Neighborhood in
+  delegation_ID     ;; Delegation in
+  LU_type           ;;land use type [Regular, irregular] (not included yet)
+]
+
+Delegaciones-own[name_delegacion Peticion_Delegaciones]
+
+Agebs-own[
+  CVEGEO                       ;;key to define state, delegation/delegation
+  CV_estado                    ;Estate
+  CV_municipio                 ;municipality
+  Localidad                    ; to represent location
+  AGEB_key                     ; to represent ageb using CVEGEO
+  ID                           ;;ID from shape file
+  group_kmean                  ;; define to witch group an ageb belongs to, based on sosio-economic charactersitics
+  zona_aquifera                ;;zone of the aquifer
+  aquifer                      ;;Aquifer ID
+  pozos_agebs                  ;;set of wells in ageb
+  count_pozos_tot              ;;sum of wells in each ageb
+  rainfall_station_influ
+  name_delegation              ;;the name of the delegation the ageb belongs to
+  paches_set_agebs             ;;the set of patches that bellow to the ageb
+  Monto                        ;; resources designated to each ageb (delegations?)
+  production_water_perageb     ;; produccion de agua {definir escala e.g resolucion temporal !!!!}
+  Abastecimiento               ;;Necesidad de la poblacion en cuanto a servicios hidraulicos (agua potable, drenaje)
+  Abastecimiento_b
+  Antiguedad-infra_Ab          ;;average Age of infra for water supply
+  Antiguedad-infra_D           ;;average Age of infra for water dranage
+  Cost_perHab                  ;;cost per habitante that would be invested if infra is repared
+  falla_ab                        ;;Fallas de infraestructura hidraulica ocasionadas por conexiones clandestinas, obstruccion por basura y procesos biofisicos
+  falla_d
+  falta_Ab                     ;;Lack of connection to water potable system
+  falta_d                      ;;Lack of connection to sewer system
+ ; Mantenimiento?               ;; what is the probability this patch is under maitnance
+  P_failure_AB                 ;;probabilidad de falla infra abastecimiento por edad
+  P_failure_D                 ;;probabilidad de falla infra drenaje por edad
+  p_failure_hund               ;;probabilidad de falla debido a hundimientos
+  p_falla_AB                   ;;probability of failure due to age and subsidence
+  p_falla_D
+  hundimiento
+  presion_hidraulica           ;;or an index of low volume of water in the pipes (mean_days_withNo_water)
+  Gasto_hidraulico             ;;water the enter the sewage system in each ageb
+  poblacion                    ;; Population size ageb
+  densidad_pop                 ;;people per hectare
+  uso_suelo
+  urban_growth                   ;; Population growth
+  Income-index                 ;; Actual income
+  Escurri
+  protest_here              ;;social pressure index per ageb (e.g. %pop. involved in the protests?)
+  Presion_social_annual               ;;social pressure index per ageb (e.g. %pop. involved in the protests?)
+  Presion_social_Index          ;;number of protest per year
+  peticion_usuarios
+  Peticion_Delegacional
+  Peticion_Delegacional_D
+  Ponding                     ;; mean number of encharcamientos between 2004 and 2014
+  Flooding                     ;; mean number of large floods between 2004 and 2014
+  flooding_sd                  ;;standard deviation flooding per ageb
+                               ;;Charactersitics of the agebs that define criteria
+  houses_with_dranage          ;; % of houses connected to the dranage from ENEGI survey instrument
+  houses_with_abastecimiento   ;; % houses connected to distribution network
+  health               ;; Number of gastrointestinal cases per ageb (from disease model)
+  health_sd
+  water_quality                ;; Perception fo water quality
+  garbage                      ;; Garbage as the perception of the cause behind obstruction of dranages
+  Obstruccion_dren             ;;obstruction of dranages
+  precipitation                ;; average annual precipitation
+  water_needed                 ;; Total water needed based on population size of colonia and water requirements per peson
+  water_in                     ;; 1 if water enters to the ageb by any mean (truck pipes storage)
+  days_water_in                  ;; water that get to the ageb in metter cubics
+  water_distributed_pipes      ;; Water imported (not produced in) to the colonia
+  NOWater_week_pois            ;; days in aweek with no water based on data and a poisson model fitting
+  water_distributed_trucks     ;; Water distributed by trucks
+  water_in_buying              ;; Water bought from private sources
+  mean_days_withNo_water                       ;; days a week with water distributed by pipes
+  scarcity                     ;; When water_needed >  water_produced, deficit > 0
+  days_wno_water               ;; Days with no water
+  resources_water              ;; index 0 1 defining the purchase power to buy water
+  surplus                      ;; When water_needed <  water_produced, surplus > 0
+  deficits                     ;; > 0 if days_water_in < requeriment of the population
+  storage_capasity             ;; number of storage devides (cisternas)
+  eficacia_servicio            ;; Gestion del servicio de Drenaje y agua potable (ej. interferencia politica, no llega la pipa, horario del mean_days_withNo_water, etc)
+  desperdicio_agua             ;; Por fugas, falta de conciencia del uso del agua
+  desviacion_agua              ;; Se llevan el agua a otros lugares
+  Capacidad_Ab                 ;; La Capacidad de la infraestructura hidraulica
+  Capacidad_D                  ;;
+  Infiltracion
+  R_tau                        ;; Threshold of rainfall according to protocol
+  alt_mean_Delegation           ;; Mean altitude of delegation to adjust water distributed by pipes; areas above the mean have higher days without water in average 
+  ;#residents decisions metrics
+  
+  d_Compra_agua                          ;;distance from ideal point for Compra_agua (buying water)
+  d_Captacion_agua                       ;;distance from ideal point for Captacion_agua (buying tinaco, ranfall storage)
+  d_Movilizaciones                       ;;distance from ideal point for Movilizaciones
+  d_Modificacion_vivienda                ;;distance from ideal point for Modificacion_vivienda
+  d_Accion_colectiva                     ;;distance from ideal point for Accion_colectiva
+  ndrank   ;id of the non dominant solution
+  
+  ;#WaterOperator decition metrics
+  d_water_extraction                   ;;distance from ideal point for decision water extraction
+  d_mantenimiento_Ab                     ;;distance from ideal point for decision to repare infrastructure
+  d_new_Ab                            ;;distance from ideal point for decision to create new infrastructure
+  
+  d_water_distribution              ;;distance from ideal point for decision to distribute water
+  d_water_importacion
+  ;WaterOperator drenaje
+  d_mantenimiento_D
+  d_new_D
+  ;standirize scaores of criteria (values from value functions)
+  value_function_Age_Ab
+  value_function_Age_d
+  value_function_scarcity
+  value_function_floods
+  value_function_floods_Wextraction 
+  value_function_capasity
+  value_function_falta_Ab
+  value_function_falta_d
+  value_function_precipitation
+  ;Vulnerability indicators
+  Y_F
+  Y_S                        ;indicators of how sensitive, relative to level of adaptations (house modifications)
+  Sensitivity_S              ;sensitivity index of neighborhood to scarcity
+  Sensitivity_F             ;sensitivity index of neighborhood to flooding
+  Exposure_S                ;indicators of level of scarcity
+  Exposure_V                     ;indicators of level of flooding
+  AC                            ;adaptive capasity
+  Vulnerability_F
+  Vulnerability_S
+  investment_here_AB               ;;record if an ANY action  was taken in a census block
+  investment_here_accumulated_AB   ;;record the accumulated number of ANY alternative_namestaken in a census block
+  
+  investment_here_AB_new               ;;record if an action to create NEW was taken in a census block
+  investment_here_accumulated_AB_new   ;;record the accumulated number of alternative_namesto create NEW taken in a census block
+  
+  investment_here_AB_mant               ;;record if an action to maintain was taken in a census block
+  investment_here_accumulated_AB_mant   ;;record the accumulated number of alternative_namesto maintain  taken in a census block
+  
+  
+  investment_here_D             ;;record if an action was taken in a census block
+  investment_here_accumulated_D ;;record the accumulated number of alternative_namestaken in a census block
+  
+  investment_here_D_new              ;;record if an action was taken in a census block
+  investment_here_accumulated_D_new  ;;record the accumulated number of alternative_namestaken in a census block
+  
+  investment_here_D_mant              ;;record if an action to maintain was taken in a census block
+  investment_here_accumulated_D_mant  ;;record the accumulated number of alternative_namesto maintain taken in a census block
+  
+  investment_here_Waterextraction              ;;to record if the action of extract more water was taken
+  investment_here_accumulated_Waterextraction
+  ;indicators at the level of the ageb
+  scarcity_annual        ;report number of days without water in a year
+  scarcity_index
+  flooding_index
+  new_incidences    ;NEW INCIDENCE AFTER CALCULATING FLOODING
+  low_high-land     ;index to differentiate areas with natural runoff (highlands) and infrastructure runoff (lowland) 
+  contiguous_agebs  ;
+  neighboor_weights  ;weight of each neighbor acording to contiguity matrix W (Baeza etal in review)
+]
+
+rain_Stations-own[name p_rain shp_gamma rate_gamma Rain_t]
+
+sewage_nodes-own[ID age from_node to_node Betweeness new-val]
+
+D_pipes-own [current-flow]
+
+Pozos-own[
+  Name
+  col_ID                      ;;location of well in neighborhood
+  CVEGEO       ;;location of well in AGEB
+  CV_estado                    ;Estate
+  CV_municipio                 ;municipality
+  Localidad                    ; to represent location
+  AGEB_key                        ; to represent ageb using CVEGEO
+  Production       ;;water production [ m3/day]
+  extraction_rate  ;;total extraction (defined by zones 1 to 32)
+  age_pozo         ;;age of well  p_failure        ;;probability of infrastructure failure here 1 if not infra here
+  aquifer
+  zone
+]
+;############################################################################################################################################################################################
+Particles-own[ ;optimization agents
+  g1 ; genome list for action 1
+  g2 ; genome list for action 2
+  g3 ; genome list for action 3
+  g4 ; genome list for action 4
+  f1 ; fitness list for action 1
+  f2 ; fitness list for action 2
+  f3 ; fitness list for action 3
+  f4 ; fitness list for action 4
+  sf1 ; sum of fitness list 1
+  sf2 ; sum of fitness list 2
+  sf3 ; sum of fitness list 3
+  sf4 ; sum of fitness list 4
+  tf ;overall turtle fitness
+]
+;####################################################################################################### 
+   
+ 
+Alternatives_IZ-own[location ID name_action criteria_names criteria_values criteria_max criteria_weights rescaled_criteria_values v_scale_S v_scale_F alternative_weights W_matrix ageb_pt]
+Alternatives_IZb-own[location ID name_action criteria_names criteria_values criteria_max criteria_weights rescaled_criteria_values v_scale_S v_scale_F alternative_weights W_matrix ageb_pt]
+Alternatives_Xo-own[location ID name_action criteria_names criteria_values criteria_max criteria_weights rescaled_criteria_values v_scale_S v_scale_F alternative_weights W_matrix ageb_pt]
+Alternatives_MC-own[location ID name_action criteria_names criteria_values criteria_max criteria_weights rescaled_criteria_values v_scale_S v_scale_F alternative_weights W_matrix ageb_pt]
+Alternatives_MCb-own[location ID name_action criteria_names criteria_values criteria_max criteria_weights rescaled_criteria_values v_scale_S v_scale_F alternative_weights W_matrix ageb_pt]
+Alternatives_MCc-own[location ID name_action criteria_names criteria_values criteria_max criteria_weights rescaled_criteria_values v_scale_S v_scale_F alternative_weights W_matrix ageb_pt]
+alternatives_WaterOperator_AB-own[ID name_action criteria_names criteria_values criteria_max criteria_weights rescaled_criteria_values v_scale_S v_scale_F alternative_weights domain]  ;value obtained for the action when calcualting the limiting matrix in super decition
+Alternatives_WaterOperator_D-own[ID name_action criteria_names criteria_values criteria_max criteria_weights rescaled_criteria_values v_scale_S v_scale_F alternative_weights domain]  ;value obtained for the action when calcualting the limiting matrix in super decition
+Alternatives_OCVAM-own[ID CLUSTER name_action criteria_names criteria_values criteria_max criteria_weights rescaled_criteria_values v_scale v_scale_F alternative_weights]   ;value obtained for the action when calcualting the limiting matrix in super decition
+
+;############################################################################################################################################################################################
+
+to SETUP
+  clear-all
+  profiler:start
+  set timestep 0
+;r:eval "setwd('/srv/home/rgarcia/SHV/')"
+ ; r:eval ".libPaths(c(.libPaths(), 'packrat/lib/x86_64-debian-linux-gnu/3.3.1'))"
+ ; r:eval ".libPaths(c(.libPaths(), 'packrat/lib-ext/x86_64-debian-linux-gnu/3.3.1'))"
+ ; r:eval ".libPaths(c(.libPaths(), 'packrat/lib-R/x86_64-debian-linux-gnu/3.3.1'))"
+  
+  r:eval "require(glmmADMB)"
+  r:eval "require(maptools)"
+  r:eval "require(ecr)"
+  r:eval "studyArea_CVG<-readShapeSpatial('/Users/padfoot/Dropbox/Github2/SHV/data/agebs_abm')"
+  r:eval "studyArea_CVG_B<-readShapeSpatial('/Users/padfoot/Dropbox/Github2/SHV/data/agebs_abm_old')"
+  r:eval "studyArea_CVG_C<-readShapeSpatial('/Users/padfoot/Dropbox/Github2/SHV/data/ageb_abm_full')"
+  ;r:eval "studyArea_CVG<-readShapeSpatial('~/data/agebs_abm')"
+  
+;  r:eval "studyArea_CVG<-readShapeSpatial('C:/Users/abaezaca/Dropbox (Personal)/Layers/sesmo/agebs_abm')"
+ ; r:eval "studyArea_CVG<-readShapeSpatial('/SHV/data/agebs_abm')"
+
+  ;
+  r:eval "studyArea_CVG@data$estado<-as.factor(substring(studyArea_CVG@data$cvgeo,1,2))"
+  set IDD r:get "studyArea_CVG@data$AGEB_ID[which(studyArea_CVG@data$estado=='09')]"
+  ;r:eval "studyArea_CVG@data$municipio<-as.factor(substring(studyArea_CVG@data$cvgeo,3,5))"
+  ;r:eval "studyArea_CVG@data$AveR<-rowMeans(studyArea_CVG@data[,18:33])"
+  r:eval "studyArea_CVG@data$BASURA<-studyArea_CVG@data$BASURA/1000"
+  r:eval "studyArea_CVG@data$encharca<-round(studyArea_CVG@data$encharca)"
+  r:eval "studyArea_CVG@data$escurri<-studyArea_CVG@data$escurri/1000"
+ ; r:eval "glm_ponds_zip<-zeroinfl(encharca~1+antiguedad+subsidenci+PR_2014, data=studyArea_CVG@data)"
+  ;r:eval "glm_ponds_qp<-glm(formula = encharca~antiguedad+subsidenci+PR_2014,data =studyArea_CVG@data ,family = quasipoisson(link=log))"
+  r:eval "fit_zinbinom <- glmmadmb(encharca~antiguedad+subsidenci+PR_2014+escurri+BASURA,data =studyArea_CVG@data,zeroInflation=TRUE, family='nbinom1')"
+  ;  r:eval "p <- predict(glm_ponds_zip, type = 'zero')"
+ ; r:eval "lambda <- predict(glm_ponds_zip, type = 'count')"
+
+;4)#################################################################################################################################
+  load-GIS-data
+;5)#################################################################################################################################
+  define_neighborhoods
+;6)###########################################################################################################################################################  
+  define_ActionsCriteria 
+;7)#############################################################################################################################################
+  define-infrastructuresystems
+;8)#############################################################################################################################################
+  ;read-statistical-data
+;  set flood_rain csv:from-file "data/bayesianofrequencia_encharcamientos.csv"
+;  set flood_capacity_riskOldCity csv:from-file "data/ABMtable_Flood_risk_capacity_oldCity.csv"
+ ; set flood_capacity_riskNewCity csv:from-file "data/ABMtable_Flood_risk_capacity_newCityB.csv"
+  set average_day_nowater_perweek csv:from-file "data/Prueba_Poisson_3.csv"
+ ; set contiguous_matrix csv:from-file "data/W_matrix_low.csv"
+;9)#############################################################################################################################################
+  set-initial-values-globals
+
+;10)#############################################################################################################################################
+  set_maximum 
+;11)#############################################################################################################################################
+ ; set-matrix-contj
+
+  
+;12)#############################################################################################################################################
+define_initial-contitions_PipedwaterDistribution
+
+;13)#############################################################################################################################################
+ show_sewer
+profiler:stop          ;; stop profiling
+print profiler:report  ;; view the results
+profiler:reset         ;; clear the data
+  
+  reset-ticks
+
+end
+
+to define-infrastructuresystems
+  ;define infrastructure as agents
+
+  ;#################################################################################################################################################  
+  ;create infraestructure as agents
+  ;#################################################################################################################################################  
+  ;rainfall stations
+;  foreach gis:feature-list-of estaciones_lluvia_SACMEX [
+;    ? ->
+;    let centroid gis:location-of gis:centroid-of ?
+;    
+;    if not empty? centroid[
+;      create-Rain_Stations 1 [
+;        set xcor item 0 centroid              ;define coodeantes of ageb at the center of the polygone
+;        set ycor item 1 centroid
+;        set color blue
+;        set name gis:property-value ? "name"
+;        set p_rain (list gis:property-value ? "jan_P" gis:property-value ? "feb_P" gis:property-value ? "mar_P" gis:property-value ? "apr_P" gis:property-value ? "may_P" gis:property-value ? "jun_P" gis:property-value ? "jul_P" gis:property-value ? "aug_P" gis:property-value ? "sep_P" gis:property-value ? "oct_P" gis:property-value ? "nov_P" gis:property-value ? "dec_P")
+;        set shp_gamma (list gis:property-value ? "jan_S" gis:property-value ? "feb_S" gis:property-value ? "mar_S" gis:property-value ? "apr_S" gis:property-value ? "may_S" gis:property-value ? "jun_S" gis:property-value ? "jul_S" gis:property-value ? "aug_S" gis:property-value ? "sep_S" gis:property-value ? "oct_S" gis:property-value ? "nov_S" gis:property-value ? "dec_S")
+;        set rate_gamma (list gis:property-value ? "jan_R" gis:property-value ? "feb_R" gis:property-value ? "mar_R" gis:property-value ? "apr_R" gis:property-value ? "may_R" gis:property-value ? "jun_R" gis:property-value ? "jul_R" gis:property-value ? "aug_R" gis:property-value ? "sep_R" gis:property-value ? "oct_R" gis:property-value ? "nov_R" gis:property-value ? "dec_R")
+;        set shape "drop"
+;      ]
+;    ]
+;  ]  
+ ;#################################################################################################################################################  
+ ;Wells
+ ;#################################################################################################################################################  
+ 
+  ;CMZM
+  foreach gis:feature-list-of PozosCMZM_Project [
+    ? ->
+    let centroid gis:location-of gis:centroid-of ?
+    if not empty? centroid
+      [ create-pozos 1
+        [ set xcor item 0 centroid
+          set ycor item 1 centroid
+          set CVEGEO [CVEGEO] of min-one-of alternatives_CDMX [distance myself]
+          if CVEGEO != 0 [
+            set CV_estado (substring CVEGEO 0 2)
+            set CV_municipio (substring CVEGEO 2 5)
+            set Localidad (substring CVEGEO 5 9)
+            set AGEB_key (substring CVEGEO 9 13)
+          ]
+          set shape "circle 2"
+          set size 2
+          set color sky
+          set hidden? FALSE
+          set age_pozo (1 + random 20) * 365
+          set extraction_rate 87225 ;m3/dia
+          set aquifer "2"
+        ]
+    ]
+  ]
+  if escala = "cuenca"[  
+  ; chalco
+    foreach gis:feature-list-of PozosChalco_Project [
+      ? ->
+      let centroid gis:location-of gis:centroid-of ?
+      if not empty? centroid
+      [ create-pozos 1
+        [ set xcor item 0 centroid
+          set ycor item 1 centroid
+          set CVEGEO [CVEGEO] of min-one-of agebs [distance myself]
+          if CVEGEO != 0 [
+            set CV_estado (substring CVEGEO 0 2)
+            set CV_municipio (substring CVEGEO 2 5)
+            set Localidad (substring CVEGEO 5 9)
+            set AGEB_key (substring CVEGEO 9 13)
+          ]
+          set shape "circle 2"
+          set size 2
+          set color magenta
+          set hidden? TRUE
+          set age_pozo (1 + random 20) * 365
+          set extraction_rate 87225 ;m3/dia
+                                    ;  set aquifer "Chalco"
+        ]
+      ]
+    ]
+    
+    ;pachuca
+    foreach gis:feature-list-of PozosPachuca_Project [
+      ? ->
+      let centroid gis:location-of gis:centroid-of ?
+      if not empty? centroid
+      [ create-pozos 1
+        [ set xcor item 0 centroid
+          set ycor item 1 centroid
+          set CVEGEO [CVEGEO] of min-one-of agebs [distance myself]
+          if CVEGEO != 0 [
+            set CV_estado (substring CVEGEO 0 2)
+            set CV_municipio (substring CVEGEO 2 5)
+            set Localidad (substring CVEGEO 5 9)
+            set AGEB_key (substring CVEGEO 9 13)
+          ]
+          set shape "circle 2"
+          set size 2
+          set color green
+          set hidden? TRUE
+          set age_pozo (1 + random 20) * 365
+          set extraction_rate 87225 ;m3/dia
+                                    ;  set aquifer "Pachuca"
+        ]
+      ]
+    ]
+    
+    ;Texcoco
+    
+    foreach gis:feature-list-of PozosTexcoco_Project [
+      ? ->
+      let centroid gis:location-of gis:centroid-of ?
+      if not empty? centroid
+      [ create-pozos 1
+        [ set xcor item 0 centroid
+          set ycor item 1 centroid
+          set CVEGEO [CVEGEO] of min-one-of agebs [distance myself]
+          if CVEGEO != 0 [
+            set CV_estado (substring CVEGEO 0 2)
+            set CV_municipio (substring CVEGEO 2 5)
+            set Localidad (substring CVEGEO 5 9)
+            set AGEB_key (substring CVEGEO 9 13)
+          ]
+          set shape "circle 2"
+          set size 2
+          set color white
+          set hidden? TRUE
+          set age_pozo (1 + random 20) * 365
+          set extraction_rate 87225 ;m3/dia
+                                    ;set aquifer "Texcoco"
+        ]
+      ]
+    ]
+  ]  
+    
+  ask pozos [
+      set production extraction_rate * (1 / count pozos) 
+    ] ; set daily production of water in [mts^3/s]*[s/min]*[min/hour]*[hours/day]*[1/tot pozos]=[mts^3/(day*pozo)]
+    
+    
+;    ;;read nodes secondary sewer
+;    foreach gis:feature-list-of desalojo_primario [
+;      ? ->
+;      let centroid gis:location-of gis:centroid-of ?
+;      if not empty? centroid
+;      [ create-sewage_nodes 1 [
+;        set xcor item 0 centroid
+;        set ycor item 1 centroid
+;        set ID  gis:property-value ? "Id"
+;        set age [Antiguedad-infra_D] of agebs-here
+;        set shape "circle 2"
+;        set size 3
+;        set color red
+;        set Betweeness gis:property-value ? "Norm_Betwe"
+;        ]
+;      ]
+;    ]
+;    
+;    let pipes csv:from-file "data/network_directed_sewage.csv"
+;    let pipes_matrix matrix:from-row-list but-first pipes
+;    let destination_node matrix:get-column  pipes_matrix 0
+;    let source_node matrix:get-column  pipes_matrix 1
+;    
+;    (foreach destination_node source_node [
+;      [a b] ->
+;      let nn sewage_nodes with [ID = a]
+;      let mm sewage_nodes with [ID = b]
+;      ask mm [create-D_pipes-to nn[]]
+;    ])
+;    
+  ask alternatives_CDMX [
+    set pozos_agebs turtle-set pozos with [CVEGEO = [CVEGEO] of myself]
+    set count_pozos_tot count pozos_agebs 
+    ;ask pozos_agebs [
+    ;  set zone [zona_aquifera] of myself
+    ;  set aquifer [aquifer] of myself
+    ;]
+     ; if CV_estado = 09[
+     ;   set rainfall_station_influ turtle-set Rain_Stations in-radius 30
+     ; ]
+    ]
+    
+    set count_pozos_initial count pozos
+end
+
+to load-GIS-data
+  ;set Agebs_map_full_csv_list csv:from-file "data/ageb_abm_full_centroid_acuif.csv"
+ ; set Agebs_map_full_csv matrix:from-row-list  Agebs_map_full_csv_list
+  
+;  print matrix:pretty-print-text Agebs_map_full_csv 
+  
+;  set estaciones_lluvia_SACMEX gis:load-dataset  "data/estacionesRain/rainfall_statistics_CDMX.shp"
+;  set desalojo_primario gis:load-dataset  "data/Sewer_Nodes_July27_Project.shp"
+  ;set pozos_WaterOperator gis:load-dataset  "data/Join_pozosColoniasAgebs.shp"                                 ;wells
+  set PozosCMZM_Project gis:load-dataset  "data/PozosCMZM_Project.shp"
+   if escala = "cuenca"[
+    set PozosPachuca_Project gis:load-dataset  "data/PozosPachuca_Project.shp"
+    set PozosTexcoco_Project gis:load-dataset  "data/PozosTexcoco_Project.shp"
+    set PozosChalco_Project gis:load-dataset  "data/PozosChalco_Project.shp"
+  ]
+    set Limites_delegacionales gis:load-dataset  "data/limites_deleg_DF_2013.shp"
+  set zonas_aquif_map gis:load-dataset  "data/AGEB_Zona_Project.shp"
+  set Agebs_map_full gis:load-dataset "data/ageb_abm_full.shp"
+  set Agebs_map gis:load-dataset "data/agebs_abm_old.shp";"data/agebs_abm.shp"
+  
+  set LHland   gis:load-dataset "data/low_hig_v1.shp" 
+  set mascara gis:load-dataset "data/Mask.shp"                  ;Mask of study area                                                                                                                         ;set Asentamientos_Irr gis:load-dataset "/GIS_layers/Asentamientos_Humanos_Irregulares_DF.shp"
+ 
+  ;define city or watersheed scale                                                                             
+ 
+  gis:set-world-envelope-ds gis:envelope-of mascara ;;mascara;Limites_delegacionales
+    set city_image  bitmap:import "data/DF_googleB.jpg"  ; "data/image_googleEarth_cuencaMexicoB.jpg";
+  set limits_world (gis:envelope-of mascara)
+  if escala = "cuenca"[
+;    gis:set-world-envelope-ds gis:envelope-of Agebs_map_full ;mascara ;;mascara;Limites_delegacionales
+  
+;    let xx_min  min (matrix:get-column Agebs_map_full_csv 0) 
+;    let xx_max  max (matrix:get-column Agebs_map_full_csv 0) 
+;    let yy_min  min (matrix:get-column Agebs_map_full_csv 1) 
+;    let yy_max  max (matrix:get-column Agebs_map_full_csv 1) 
+;    ;top-left      19.578775°       -99.620393°
+;top-right     19.583922°       -98.792704°
+;Bottom-right   19.171378°       -98.766428°
+;Bottom-left    19.164627°      -99.615584°
+    gis:set-world-envelope-ds (list -99.61 -98.79 19.16 19.58)
+    set city_image  bitmap:import "data/image_googleEarth_cuencaMexicoB.jpg";"data/DF_googleB.jpg"                                                   ; google earth image
+  set limits_world (gis:envelope-of Agebs_map_full)
+
+  ]
+
+  bitmap:copy-to-pcolors City_image false
+
+end
+  to define_neighborhoods
+  ;  define_neighborhoods_full ;;REFERS TO THE FULL AREA OF STUDY. THAT IS THE ENTIRE WATERSHED OF MEXICO CITY VALEY  (need to complete information for other areas)
+  
+
+
+  let gis_f (gis:feature-list-of Agebs_map_full)
+ ; let gis_a (gis:feature-list-of Agebs_map)
+  ;let falta r:get "studyArea_CVG@data$falta_dren"
+  let ly_IDB r:get "studyArea_CVG_B@data$AGEB_ID"
+  let lya r:get "studyArea_CVG_B@data$antiguedad"
+  let lyc r:get "studyArea_CVG_B@data$capac_d"
+  let lyel r:get "studyArea_CVG_B@data$ELEVACION"
+  let lyss r:get "studyArea_CVG_B@data$subsidenci"
+  let lyp r:get "studyArea_CVG_B@data$PONDING"
+  let lyb r:get "studyArea_CVG_B@data$BASURA"
+  let lyh r:get "studyArea_CVG_B@data$ENF_14"
+  let lypmd r:get "studyArea_CVG_B@data$PRES_MED"
+  
+  let ly_ID r:get "studyArea_CVG_C@data$AGEB_ID"
+  let ly_CVEGEO r:get "studyArea_CVG_C@data$CVEGEO"
+  let ly_kmg r:get "studyArea_CVG_C@data$KMEANS5"
+  
+  let ly_ab r:get "studyArea_CVG_C@data$abastecimi"
+  let ly_cal r:get "studyArea_CVG_C@data$cal_agua"
+  let ly_fal r:get "studyArea_CVG_C@data$Falta_in"
+  let ly_fald r:get "studyArea_CVG_C@data$falta_dren"
+  let ly_ph r:get "studyArea_CVG_C@data$pres_hid"
+  let ly_dev r:get "studyArea_CVG_C@data$desv_agua"
+  let ly_gi r:get "studyArea_CVG_C@data$gasto"
+  let ly_pd r:get "studyArea_CVG_C@data$pet_del_dr"
+  let ly_p r:get "studyArea_CVG_C@data$poblacion"
+  let ly_i r:get "studyArea_CVG_C@data$ingreso"
+  let ly_ob r:get "studyArea_CVG_C@data$obstruc"
+  let ly_m r:get "studyArea_CVG_C@data$monto"
+  let ly_desp r:get "studyArea_CVG_C@data$desp_agua"
+  let ly_pu r:get "studyArea_CVG_C@data$pet_usr_d"
+  let ly_cu r:get "studyArea_CVG_C@data$crec_urb"
+  let iid 0 
+  foreach gis_f ; "ID_ZONA" "0"
+    [ ? ->
+      let centroid gis:location-of gis:centroid-of ?
+      if not empty? centroid[
+        ;if not empty? centroid[
+        create-agebs 1 [
+          set xcor item 0 centroid              ;define coodeantes of ageb at the center of the polygone
+          set ycor item 1 centroid
+          set ID  (item iid ly_ID);gis:property-value ? "AGEB_ID"
+          set CVEGEO gis:property-value ? "CVEGEO"
+          set CV_estado (substring CVEGEO 0 2)
+          set CV_municipio (substring CVEGEO 2 5)
+          set Localidad (substring CVEGEO 5 9)
+          set AGEB_key (substring CVEGEO 9 13)
+          set color grey
+          set shape "circle"
+          set size 0.5
+          set hidden? false
+          if CV_estado = "09"[
+            set group_kmean (item iid ly_kmg); ifelse-value (gis:property-value ? "KMEANS5" = nobody)[0][gis:property-value ? "KMEANS5"]
+            set Abastecimiento (item iid ly_ab);gis:property-value ?  "abastecimi"; poblacion * Requerimiento_deAgua
+            set Antiguedad-infra_Ab 365 * (item iid lya);gis:property-value ?2 "antiguedad"
+            set Antiguedad-infra_D 365 * (item iid lya);gis:property-value ?2 "antiguedad"
+            set altitude (item iid lyel);gis:property-value ?2 "ELEVACION"
+                                        ;set aquifer (item iid ly_ID);gis:property-value (gis:find-one-feature zonas_aquif_map "CVEGEO" CVEGEO) "ACUIF"
+                                        ;set low_high-land (item iid ly_ID); gis:property-value (gis:find-one-feature LHland "AGEB_ID" (word ID)) "LOW_HIG"
+                                        ; set group_kmean gis:property-value (gis:find-one-feature  "CVEGEO" CVEGEO) "KMEANS5"
+                                        ; set precipitation gis:property-value (gis:find-one-feature  "CVEGEO" CVEGEO) "PRECIP"        
+            
+            set Capacidad_Ab 1
+            set Capacidad_d ifelse-value ((item iid lyc) > 0)[(item iid lyc) / 10000000][0];ifelse-value(gis:property-value ?2 "capac_d" != nobody)[(gis:property-value ?2 "capac_d") / 10000000][0]
+            set Falla_d (item iid ly_fald);1
+                                        ;         set precipitation (item iid ly_ID);ifelse-value (gis:property-value ?2 "PR_2009" != nobody)[gis:property-value ?2 "PR_2009"][1]
+          
+            set water_quality (item iid ly_cal); gis:property-value ? "cal_agua"
+            set scarcity 0;(item iid ly_ID); gis:property-value ?2 "ESCASEZ"
+            set FALTA_ab (item iid ly_fal); gis:property-value ? "Falta_in"
+            set houses_with_abastecimiento 1 - FALTA_ab
+            set FALLA_ab (item iid ly_fal);gis:property-value ? "falla_in"
+            set falta_d (item iid ly_fald);gis:property-value ? "falta_dren"
+            set Presion_social_annual 1
+            set presion_hidraulica (item iid ly_ph);gis:property-value ? "pres_hid"
+            set hundimiento (item iid lyss);gis:property-value ?2 "subsidenci"
+            set presion_de_medios (item iid lypmd);gis:property-value ?2 "PRES_MED"
+            set desviacion_agua (item iid ly_dev); gis:property-value ? "desv_agua" ;; 1 si hay pozo en ageb o en agebs colindantes; 0 si no.
+                                                ;       
+            set houses_with_dranage 1 - falta_d
+            set gasto_hidraulico (item iid ly_gi); gis:property-value ? "gasto"
+            set Peticion_Delegacional_D (item iid ly_pd);  gis:property-value ? "pet_del_dr"
+                                                        ;      
+            set poblacion (item iid ly_p); gis:property-value ? "poblacion"
+            set Income-index ifelse-value ((item iid ly_i) >= 0)[(item iid ly_i)][0]; ifelse-value(gis:property-value ?2 "ingreso" != nobody)[gis:property-value ?2 "ingreso"][random-float 1]
+            set health ifelse-value ((item iid lyh) > 0)[(item iid lyh)][0]; ifelse-value(gis:property-value ?2 "ENF_14" != nobody)[gis:property-value ?2  "ENF_14"][random-float 0]
+            set Ponding (item iid lyp) ;ifelse-value(gis:property-value ?2 "PONDING" != nobody)[gis:property-value ?2  "PONDING"][0]
+            set flooding (item iid lyp); ifelse-value(gis:property-value ?2 "PONDING" != nobody)[gis:property-value ?2  "PONDING"][0]
+            set garbage (item iid lyb) / 10000; (gis:property-value ?2 "BASURA") / 10000
+            set Obstruccion_dren (item iid ly_ob); gis:property-value ? "obstruc"
+            
+            set Monto (item iid ly_m) ; gis:property-value ? "monto"
+            
+            set desperdicio_agua (item iid ly_desp); gis:property-value ? "desp_agua"       ;;Por fugas, falta de conciencia del uso del agua
+            set peticion_usuarios (item iid ly_pu); gis:property-value ? "pet_usr_d"  ;index densidad de infra por cuanca * falta de conexiones por ageb.
+            set urban_growth (item iid ly_cu); gis:property-value ? "crec_urb"
+            ;set zona_aquifera (item iid ly_ID); gis:property-value (gis:find-one-feature zonas_aquif_map "CVEGEO" CVEGEO) "ID_ZONA"
+            
+            set scarcity_annual 0
+            set days_water_in 0
+            set Y_F 0
+            set Y_S 1
+            set vulnerability_S 1
+            set vulnerability_F 1
+            set neighboor_weights []
+            set contiguous_agebs turtle-set nobody
+          ]
+        ]
+      ]
+        set iid iid + 1    
+  ]
+      
+      
+
+  set alternatives_CDMX agebs with [CV_estado = "09"]
+  set sort_AG sort-on [ID] alternatives_CDMX ;each census block sorted by ID
+  set ID_sort sort [ID] of alternatives_CDMX 
+  set N_neighborhoods count alternatives_CDMX 
+
+  if escala = "cuenca" [
+    
+    set alternatives_noCDMX agebs with [CV_estado = "15"]
+    set sort_AG_noCDMX sort-on [ageb_ID] alternatives_noCDMX  ;each census block sorted by ID
+  set N_neighborhoods count alternatives_CDMX + count alternatives_noCDMX 
+  
+  ]  
+ 
+end
+;####################################################################################################### 
+   to define_ActionsCriteria
+  ;This procedure defines each alternative as a object, with atributes defined by:
+  ;1)ID: identification of the mental model network where weights are elicited
+  ;2)name_action: the name of the alternative of the MCDA
+  ;3)w: a set of weight that connect each criteria
+  ;4) alternative_weightss: a set of weights for each action when HNP is used (supermatrix)
+  
+  let MMIz csv:from-file  "data/I080316_OTR.weighted.csv"  
+  let MMIz_limit csv:from-file  "data/I080316_OTR.limit.csv"
+  ;Kmeangroup=0
+  ;read alternative's names from limit matrix
+  let alternative_names (list item 1 item 2 MMIz_limit
+    item 1 item 3 MMIz_limit
+    item 1 item 4 MMIz_limit
+    item 1 item 5 MMIz_limit
+    item 1 item 6 MMIz_limit)
+  let jj 0
+  
+  ;read criteria names and weights to set agent's attributes
+  foreach alternative_names[
+    ? ->
+    create-Alternatives_IZ 1[
+      
+      ;insert weighted_matrix
+      set W_matrix  []
+      let MMIz_limit_new []
+      let VMMIz_limit []
+      let cc 2
+      let cri 2
+      while [cri < 16][   ;tranfor the data from.csv to a matrix to manipulte using matrix extention
+        set cc 2
+        while [cc < 16][
+          set VMMIz_limit lput (item cc item cri MMIz) VMMIz_limit
+          set cc cc + 1
+        ]
+        set cri cri + 1
+        set MMIz_limit_new lput VMMIz_limit MMIz_limit_new
+        set VMMIz_limit []
+      ]
+      set W_matrix MMIz_limit_new
+   
+      
+      
+      
+      set ID "IO80316"
+      set location list 19.322143 -99.038609 ;miravalle arriba
+      if jj = 0[
+        let xmin item 0 limits_world
+        let xmax item 1 limits_world
+        let ymin item 2 limits_world
+        let ymax item 3 limits_world
+        let x item 1 location 
+        let y item 0 location 
+        set xcor (x - xmin) / (xmax - xmin) * world-width + min-pxcor 
+        set ycor (y - ymin) / (ymax - ymin) * world-width + min-pycor
+        set name_action ?
+        set shape "house"
+        set size 10 
+      ]
+      ;set label name_action
+      set ageb_pt 4085
+      set criteria_values (list 0 0 0 0 0 0 0 0 0)
+      set criteria_max (list 0 0 0 0 0 0 0 0 0)
+      set rescaled_criteria_values (list 0 0 0 0 0 0 0 0 0)
+      let w_sum sum (list
+        item 6 item 7 MMIz_limit
+        item 6 item 8 MMIz_limit
+        item 6 item 9 MMIz_limit
+        item 6 item 10 MMIz_limit
+        item 6 item 11 MMIz_limit
+        item 6 item 12 MMIz_limit
+        item 6 item 13 MMIz_limit
+        item 6 item 14 MMIz_limit
+        item 6 item 15 MMIz_limit)
+      ;read criteria weight
+      set criteria_weights (list (item 6 item 7 MMIz_limit / w_sum)
+        (item 6 item 8 MMIz_limit / w_sum)
+        (item 6 item 9 MMIz_limit / w_sum)
+        (item 6 item 10 MMIz_limit / w_sum)
+        (item 6 item 11 MMIz_limit / w_sum)
+        (item 6 item 12 MMIz_limit / w_sum)
+        (item 6 item 13 MMIz_limit / w_sum)
+        (item 6 item 14 MMIz_limit / w_sum)
+        (item 6 item 15 MMIz_limit / w_sum))
+      ;read critera names
+      set criteria_names (
+        list item 1 item 7 MMIz_limit
+        item 1 item 8 MMIz_limit
+        item 1 item 9 MMIz_limit
+        item 1 item 10 MMIz_limit
+        item 1 item 11 MMIz_limit
+        item 1 item 12 MMIz_limit
+        item 1 item 13 MMIz_limit
+        item 1 item 14 MMIz_limit
+        item 1 item 15 MMIz_limit)
+      
+      ;read and normalize alternative's weights to compute ratings for distance to the ideal point
+      if-else ANP = TRUE[
+        set alternative_weights item (jj + 2) item (jj + 2) MMIz_limit / (item 5 item 5 MMIz_limit + item 4 item 4 MMIz_limit + item 3 item 3 MMIz_limit + item 6 item 6 MMIz_limit + item 2 item 2 MMIz_limit)
+      ]
+      [
+        set alternative_weights 1
+      ]
+      
+    ]
+    
+    set jj jj + 1
+  ]
+  ; define scale for step value function
+  ask Alternatives_IZ with [name_action = "Compra de agua"] [set v_scale_S [0 0 0 0 0]]
+  ask Alternatives_IZ with [name_action = "Movilizaciones"] [set v_scale_S [0.05 0.05 0.05 1 1]]
+  ask Alternatives_IZ with [name_action = "Accion colectiva"] [set v_scale_S [0 1 1 1 1]]
+  ask Alternatives_IZ with [name_action = "Captacion de agua"] [set v_scale_S [0 0 0 0 0]]
+  ask Alternatives_IZ with [name_action = "Modificacion vivienda"] [set v_scale_S [0 1 1 1 1]]
+  
+  ;#############################################################################################
+ ;Iztapalapa B
+  let MMIz_b csv:from-file  "data/I072816_OTR.weighted.csv"   
+  let MMIz_b_limit csv:from-file  "data/I072816_OTR.limit.csv"
+  ;Kmeangroup=1
+  ;read alternative's names from limit matrix
+  set alternative_names (list item 1 item 2 MMIz_b_limit
+    item 1 item 3 MMIz_b_limit
+    item 1 item 4 MMIz_b_limit
+    item 1 item 5 MMIz_b_limit
+    item 1 item 6 MMIz_b_limit)
+  set jj 0 
+  
+  ;read criteria names and weights to set agent's attributes
+  foreach alternative_names[
+    ? ->
+    create-Alternatives_IZb 1[
+      
+      ;insert weighted_matrix
+      set W_matrix  []
+      let MMIz_b_limit_new []
+      let VMMIz_b_limit []
+      let cc 2
+      let cri 2
+      while [cri < 17][   ;tranfor the data from.csv to a matrix to manipulte using matrix extention
+        set cc 2
+        while [cc < 17][
+      set VMMIz_b_limit lput (item cc item cri MMIz_b) VMMIz_b_limit
+          set cc cc + 1
+        ]
+        set cri cri + 1
+        set MMIz_b_limit_new lput VMMIz_b_limit MMIz_b_limit_new
+        set VMMIz_b_limit []
+      ]
+      set W_matrix MMIz_b_limit_new
+   
+  
+      
+      set ID "I072816"
+      set location list 19.324931 -99.041920  ;desarrollo urbano Quetzalcoatl
+      if jj = 0[
+        let xmin item 0 limits_world
+        let xmax item 1 limits_world
+        let ymin item 2 limits_world
+        let ymax item 3 limits_world
+        let x item 1 location 
+        let y item 0 location 
+        set xcor (x - xmin) / (xmax - xmin) * world-width + min-pxcor 
+        set ycor (y - ymin) / (ymax - ymin) * world-width + min-pycor
+        set name_action ?
+        set shape "house"
+        set size 10 
+      ]
+      set name_action ?
+      set criteria_values (list 0 0 0 0 0 0 0 0 0)
+      set criteria_max (list 0 0 0 0 0 0 0 0 0)
+      set rescaled_criteria_values (list 0 0 0 0 0 0 0 0 0)
+      let w_sum sum (list
+        item 6 item 7 MMIz_b_limit
+        item 6 item 8 MMIz_b_limit
+        item 6 item 9 MMIz_b_limit
+        item 6 item 10 MMIz_b_limit
+        item 6 item 11 MMIz_b_limit
+        item 6 item 12 MMIz_b_limit
+        item 6 item 13 MMIz_b_limit
+        item 6 item 14 MMIz_b_limit
+        item 6 item 15 MMIz_b_limit)
+      ;read criteria weight
+      set criteria_weights (list (item 6 item 7 MMIz_b_limit / w_sum)
+        (item 6 item 8 MMIz_b_limit / w_sum)
+        (item 6 item 9 MMIz_b_limit / w_sum)
+        (item 6 item 10 MMIz_b_limit / w_sum)
+        (item 6 item 11 MMIz_b_limit / w_sum)
+        (item 6 item 12 MMIz_b_limit / w_sum)
+        (item 6 item 13 MMIz_b_limit / w_sum)
+        (item 6 item 14 MMIz_b_limit / w_sum)
+        (item 6 item 15 MMIz_b_limit / w_sum))
+      ;read critera names
+      set criteria_names (
+        list item 1 item 7 MMIz_b_limit
+        item 1 item 8 MMIz_b_limit
+        item 1 item 9 MMIz_b_limit
+        item 1 item 10 MMIz_b_limit
+        item 1 item 11 MMIz_b_limit
+        item 1 item 12 MMIz_b_limit
+        item 1 item 13 MMIz_b_limit
+        item 1 item 14 MMIz_b_limit
+        item 1 item 15 MMIz_b_limit)
+      
+      ;read and normalize alternative's weights to compute ratings for distance to the ideal point
+      if-else ANP = TRUE[
+        set alternative_weights item (jj + 2) item (jj + 2) MMIz_b_limit / (item 5 item 5 MMIz_b_limit + item 4 item 4 MMIz_b_limit + item 3 item 3 MMIz_b_limit + item 6 item 6 MMIz_b_limit + item 2 item 2 MMIz_b_limit)
+      ]
+      [
+        set alternative_weights 1
+      ]
+      
+    ]
+    
+    set jj jj + 1
+  ]
+  ; define scale for step value function
+  ask Alternatives_IZb with [name_action = "Compra de agua"] [set v_scale_S [0 0 0 0 0]]
+  ask Alternatives_IZb with [name_action = "Movilizaciones"] [set v_scale_S [0.05 0.05 0.05 1 1]]
+  ask Alternatives_IZb with [name_action = "Accion colectiva"] [set v_scale_S [0 1 1 1 1]]
+  ask Alternatives_IZb with [name_action = "Captacion de agua"] [set v_scale_S [0 0 0 0 0]]
+  ask Alternatives_IZb with [name_action = "Modificacion vivienda"] [set v_scale_S [0 1 1 1 1]]
+  
+  ;#############################################################################################
+  ;Xochimilco a
+
+  let MMXo_L csv:from-file  "data/X062916_OTR_a.limit.csv"
+  let MMXo_W csv:from-file  "data/X062916_OTR_a.weighted.csv"
+
+  set jj 0
+  
+  set alternative_names(list item 1 item 2 MMXo_L   ;obtain the name of the alternatives performed
+    item 1 item 3 MMXo_L
+    item 1 item 4 MMXo_L
+    item 1 item 5 MMXo_L
+    item 1 item 6 MMXo_L)
+  
+  foreach alternative_names[
+    ? ->
+    create-Alternatives_Xo 1[
+      
+      
+      ;insert weighted_matrix
+      set W_matrix  []
+      let MMXo_limit_new []
+      let VMMXo_limit []
+      let cc 2
+      let cri 2
+      while [cri < 17][   ;tranfor the data from.csv to a matrix to manipulte using matrix extention
+        set cc 2
+        while [cc < 17][
+      set VMMXo_limit lput (item cc item cri MMXo_W) VMMXo_limit
+          set cc cc + 1
+        ]
+        set cri cri + 1
+        set MMXo_limit_new lput VMMXo_limit MMXo_limit_new
+        set VMMXo_limit []
+      ]
+      set W_matrix MMXo_limit_new
+   
+      
+      
+      
+      set ID "XO62916_a (Tiziliclipa)"
+      set location list 19.227280 -99.088687
+      if jj = 0[
+        let xmin item 0 limits_world
+        let xmax item 1 limits_world
+        let ymin item 2 limits_world
+        let ymax item 3 limits_world
+        let x item 1 location 
+        let y item 0 location 
+        set xcor (x - xmin) / (xmax - xmin) * world-width + min-pxcor 
+        set ycor (y - ymin) / (ymax - ymin) * world-width + min-pycor
+        set name_action ?
+        set shape "house"
+        set size 10 
+      ]
+      set name_action ?
+      set criteria_values (list 0 0 0 0 0 0 0 0 0)
+      set criteria_max (list 0 0 0 0 0 0 0 0 0)
+      set rescaled_criteria_values (list 0 0 0 0 0 0 0 0 0)
+      let w_sum sum (list item 6 item 7 MMXo_L
+        item 6 item 8 MMXo_L
+        item 6 item 9 MMXo_L
+        item 6 item 10 MMXo_L
+        item 6 item 11 MMXo_L
+        item 6 item 12 MMXo_L
+        item 6 item 13 MMXo_L
+        item 6 item 14 MMXo_L
+        item 6 item 15 MMXo_L)
+      
+      set criteria_weights (list (item 6 item 7 MMXo_L / w_sum)
+        (item 6 item 8 MMXo_L / w_sum)
+        (item 6 item 9 MMXo_L / w_sum)
+        (item 6 item 10 MMXo_L / w_sum)
+        (item 6 item 11 MMXo_L / w_sum)
+        (item 6 item 12 MMXo_L / w_sum)
+        (item 6 item 13 MMXo_L / w_sum)
+        (item 6 item 14 MMXo_L / w_sum)
+        (item 6 item 15 MMXo_L / w_sum))
+      
+      set criteria_names (list item 1 item 7 MMXo_L
+        item 1 item 8 MMXo_L
+        item 1 item 9 MMXo_L
+        item 1 item 10 MMXo_L
+        item 1 item 11 MMXo_L
+        item 1 item 12 MMXo_L
+        item 1 item 13 MMXo_L
+        item 1 item 14 MMXo_L
+        item 1 item 15 MMXo_L)
+      if-else ANP = TRUE[
+        set alternative_weights (item (jj + 2) item (jj + 2) MMXo_L) / (item 5 item 5 MMXo_L + item 4 item 4 MMXo_L + item 3 item 3 MMXo_L + item 6 item 6 MMXo_L + item 2 item 2 MMXo_L)
+      ][
+        set alternative_weights 1
+      ]
+    ]
+    
+    set jj jj + 1
+  ]
+  
+  ask Alternatives_Xo with [name_action = "Compra de agua"] [set v_scale_S [0.05 0.1 1 1 1]]
+  ask Alternatives_Xo with [name_action = "Movilizaciones"] [set v_scale_S [0.05 0.05 0.05 1 1]]
+  ask Alternatives_Xo with [name_action = "Accion colectiva"] [set v_scale_S [0.05 0.1 1 1 1]]
+  ask Alternatives_Xo with [name_action = "Captacion de agua"] [set v_scale_S [0.05 0.1 1 1 1]]
+  ask Alternatives_Xo with [name_action = "Modificacion vivienda"] [set v_scale_S [0 0 0 0 1]]
+  
+  
+  ask Alternatives_Xo [set v_scale_F [0 0 0 0 0]]
+  
+  
+  
+  ;#########################################################################
+;Magdalena contreras
+  let MMMC csv:from-file  "data/MC080416_OTR_a.weighted.csv"
+  let MMMC_limit csv:from-file  "data/MC080416_OTR_a.limit.csv"
+    ;Kmeangroup=4
+  
+  set alternative_names(list item 1 item 2 MMMC_limit
+    item 1 item 3 MMMC_limit
+    item 1 item 4 MMMC_limit
+    item 1 item 5 MMMC_limit
+    item 1 item 6 MMMC_limit)
+  set jj 0
+  foreach alternative_names[
+    ? ->
+    create-Alternatives_MC 1[
+      
+      set location list 19.310102 -99.228422
+      ;insert weighted_matrix
+      set W_matrix  []
+      let MMMC_limit_new []
+      let VMMMC_limit []
+      let cc 2
+      let cri 2
+      while [cri < 13][   ;tranfor the data from.csv to a matrix to manipulte using matrix extention
+        set cc 2
+        while [cc < 13][
+      set VMMMC_limit lput (item cc item cri MMMC) VMMMC_limit
+          set cc cc + 1
+        ]
+        set cri cri + 1
+        set MMMC_limit_new lput VMMMC_limit MMMC_limit_new
+        set VMMMC_limit []
+      ]
+      set W_matrix MMMC_limit_new
+   
+      
+      
+      
+      
+      
+      set ID "MC080416"
+      if jj = 0[
+        let xmin item 0 limits_world
+        let xmax item 1 limits_world
+        let ymin item 2 limits_world
+        let ymax item 3 limits_world
+        let x item 1 location 
+        let y item 0 location 
+        set xcor (x - xmin) / (xmax - xmin) * world-width + min-pxcor 
+        set ycor (y - ymin) / (ymax - ymin) * world-width + min-pycor
+        set name_action ?
+        set shape "house"
+        set size 10 
+      ]
+      set name_action ?
+      set criteria_values (list 0 0 0 0 0 0)
+      set criteria_max (list 0 0 0 0 0 0)
+      set rescaled_criteria_values (list 0 0 0 0 0 0)
+      let w_sum sum (list item 2 item 7 MMMC_limit
+        item 2 item 8 MMMC_limit
+        item 2 item 9 MMMC_limit
+        item 2 item 10 MMMC_limit
+        item 2 item 11 MMMC_limit
+        item 2 item 12 MMMC_limit)
+      
+      set criteria_weights (list (item 2 item 7 MMMC_limit / w_sum)
+        (item 2 item 8 MMMC_limit / w_sum)
+        (item 2 item 9 MMMC_limit / w_sum)
+        (item 2 item 10 MMMC_limit / w_sum)
+        (item 2 item 11 MMMC_limit / w_sum)
+        (item 2 item 12 MMMC_limit / w_sum))
+      
+      set criteria_names (list item 1 item 7 MMMC_limit
+        item 1 item 8 MMMC_limit
+        item 1 item 9 MMMC_limit
+        item 1 item 10 MMMC_limit
+        item 1 item 11 MMMC_limit
+        item 1 item 12 MMMC_limit)
+      
+      if-else ANP = TRUE[
+        set alternative_weights item (jj + 2) item (jj + 2) MMMC_limit /(item 5 item 5 MMMC_limit + item 4 item 4 MMMC_limit + item 3 item 3 MMMC_limit + item 6 item 6 MMMC_limit + item 2 item 2 MMMC_limit)
+      ][
+        set alternative_weights 1
+      ]
+      
+    ]
+    set jj jj + 1
+    
+  ]
+  
+  ask Alternatives_MC with [name_action = "Compra de agua"] [set v_scale_S [0.05 1 1 1 1]]
+  ask Alternatives_MC with [name_action = "Movilizaciones"] [set v_scale_S [0.05 0.05 0.05 0.4 1]]
+  ask Alternatives_MC with [name_action = "Accion colectiva"] [set v_scale_S [0.05 0.05 0.05 0.05 1]]
+  ask Alternatives_MC with [name_action = "Captacion de agua"] [set v_scale_S [0.05 0.1 1 1 1]]
+  ask Alternatives_MC with [name_action = "Modificacion vivienda"] [set v_scale_S [0.05 0.05 0.05 0.4 1]]
+  ask Alternatives_MC with [name_action = "Reuso del agua"][set v_scale_S [0.05 1 1 1 1]]
+  ask Alternatives_MC with [name_action = "Compra de infrestractura de agua"][set v_scale_S [0.05 0.1 0.15 0.1 1]]
+  
+  ask Alternatives_MC [set v_scale_F [0 0 0 0 0]]
+  
+  ;#########################################
+  
+  
+  let MMMCb csv:from-file  "data/MC080416_OTR_b.weighted.csv"
+  let MMMCb_limit csv:from-file  "data/MC080416_OTR_b.limit.csv"
+  
+  set alternative_names(list item 1 item 2 MMMCb_limit
+    item 1 item 3 MMMCb_limit
+    item 1 item 4 MMMCb_limit
+    item 1 item 5 MMMCb_limit
+    item 1 item 6 MMMCb_limit)
+  set jj 0
+  foreach alternative_names[
+    ? ->
+    create-Alternatives_MCb 1 [
+      
+      
+      
+      
+      
+         ;insert weighted_matrix
+      set W_matrix  []
+      let MMMCb_limit_new []
+      let VMMMCb_limit []
+      let cc 2
+      let cri 2
+      while [cri < 17][   ;tranfor the data from.csv to a matrix to manipulate it using matrix extention
+        set cc 2
+        while [cc < 17][
+      set VMMMCb_limit lput (item cc item cri MMMCb) VMMMCb_limit
+          set cc cc + 1
+        ]
+        set cri cri + 1
+        set MMMCb_limit_new lput VMMMCb_limit MMMCb_limit_new
+        set VMMMCb_limit []
+      ]
+      set W_matrix MMMCb_limit_new
+   
+      
+      
+      
+      
+      
+      set ID "MC080416b"
+      set location list 19.310102 -99.228422
+      if jj = 0[
+        let xmin item 0 limits_world
+        let xmax item 1 limits_world
+        let ymin item 2 limits_world
+        let ymax item 3 limits_world
+        let x item 1 location 
+        let y item 0 location 
+        set xcor (x - xmin) / (xmax - xmin) * world-width + min-pxcor 
+        set ycor (y - ymin) / (ymax - ymin) * world-width + min-pycor
+        set name_action ?
+        set shape "house"
+        set size 10 
+      ]
+      set name_action ?
+
+      set criteria_values (list 0 0 0 0 0 0 0 0 0 0)
+      set criteria_max (list 0 0 0 0 0 0 0 0 0 0)
+      set rescaled_criteria_values (list 0 0 0 0 0 0 0 0 0 0)
+      let w_sum sum (list item 6 item 7 MMMCb_limit
+        item 6 item 8 MMMCb_limit
+        item 6 item 9 MMMCb_limit
+        item 6 item 10 MMMCb_limit
+        item 6 item 11 MMMCb_limit
+        item 6 item 12 MMMCb_limit
+        item 6 item 13 MMMCb_limit
+        item 6 item 14 MMMCb_limit
+        item 6 item 15 MMMCb_limit
+        item 6 item 16 MMMCb_limit)
+      
+      set criteria_weights (list (item 6 item 7 MMMCb_limit / w_sum)
+        (item 6 item 8 MMMCb_limit / w_sum)
+        (item 6 item 9 MMMCb_limit / w_sum)
+        (item 6 item 10 MMMCb_limit / w_sum)
+        (item 6 item 11 MMMCb_limit / w_sum)
+        (item 6 item 12 MMMCb_limit / w_sum)
+        (item 6 item 13 MMMCb_limit / w_sum)
+        (item 6 item 14 MMMCb_limit / w_sum)
+        (item 6 item 15 MMMCb_limit / w_sum)
+        (item 6 item 16 MMMCb_limit / w_sum))
+      
+      
+      
+      set criteria_names (list item 1 item 7 MMMCb_limit
+        item 1 item 8 MMMCb_limit
+        item 1 item 9 MMMCb_limit
+        item 1 item 10 MMMCb_limit
+        item 1 item 11 MMMCb_limit
+        item 1 item 12 MMMCb_limit
+        item 1 item 13 MMMCb_limit
+        item 1 item 14 MMMCb_limit
+        item 1 item 15 MMMCb_limit
+        item 1 item 16 MMMCb_limit)
+      
+      if-else ANP = TRUE[
+        set alternative_weights item (jj + 2) item (jj + 2) MMMCb_limit /(item 5 item 5 MMMCb_limit + item 4 item 4 MMMCb_limit + item 3 item 3 MMMCb_limit + item 6 item 6 MMMCb_limit + item 2 item 2 MMMCb_limit)
+      ][
+        set alternative_weights 1
+      ]
+    ]
+    set jj jj + 1
+    
+  ]
+  
+  ask Alternatives_MCb with [name_action = "Compra de agua"] [set v_scale_S [0.05 0.1 1 1 1]]
+  ask Alternatives_MCb with [name_action = "Movilizaciones"] [set v_scale_S [0.05 0.05 0.05 0.4 1]]
+  ask Alternatives_MCb with [name_action = "Accion colectiva"] [set v_scale_S [0.05 0.1 1 1 1]]
+  ask Alternatives_MCb with [name_action = "Captacion de agua"] [set v_scale_S [0.05 0.1 1 1 1]]
+  ask Alternatives_MCb with [name_action = "Modificacion vivienda"] [set v_scale_S [0 0 0 0 0]]
+  
+  
+  ask Alternatives_MCb with [name_action = "Compra de agua"] [set v_scale_F [0 0 0 0 0]]
+  ask Alternatives_MCb with [name_action = "Movilizaciones"] [set v_scale_F [0 0 0 0 0]]
+  ask Alternatives_MCb with [name_action = "Accion colectiva"] [set v_scale_F [0 0 0 0 0]]
+  ask Alternatives_MCb with [name_action = "Captacion de agua"] [set v_scale_F [0 0 0 0 0]]
+  ask Alternatives_MCb with [name_action = "Modificacion vivienda"] [set v_scale_F [0 1 1 1 1]]
+  ;################################################
+  
+  
+  ;add el octal (arriba0
+  ;set location list 19.300691 -99.261214
+  
+ ; let MMMCc csv:from-file  "data/MC030315_OTR_ElOcotal.weighted.csv"  no weighted
+  let MMMCc_limit csv:from-file  "data/MC030315_OTR_ElOcotal.limit.csv"
+  
+  set alternative_names(list item 1 item 2 MMMCc_limit
+    item 1 item 3 MMMCc_limit
+    item 1 item 4 MMMCc_limit
+    item 1 item 5 MMMCc_limit
+    item 1 item 6 MMMCc_limit
+    item 1 item 7 MMMCc_limit
+    item 1 item 8 MMMCc_limit
+    item 1 item 9 MMMCc_limit)
+  set jj 0
+  foreach alternative_names[
+    ? ->
+    create-Alternatives_MCc 1 [
+      
+      
+      
+         ;insert weighted_matrix
+      ;set W_matrix  []
+     ; let MMMCc_limit_new []
+     ; let VMMMCc_limit []
+     ;; let cc 2
+     ; let cri 2
+     ; while [cri < 17][   ;tranfor the data from.csv to a matrix to manipulate it using matrix extention
+      ;  set cc 2
+      ;  while [cc < 17][
+     ; set VMMMCc_limit lput (item cc item cri MMMCc) VMMMCc_limit
+      ;    set cc cc + 1
+      ;  ]
+       ; set cri cri + 1
+       ; set MMMCc_limit_new lput VMMMCc_limit MMMCc_limit_new
+       ; set VMMMCc_limit []
+     ; ]
+      ;set W_matrix MMMCc_limit_new
+   
+      
+      
+      
+      
+      
+      set ID "MC030315"
+      set location list 19.300691 -99.261214
+      if jj = 0[
+        let xmin item 0 limits_world
+        let xmax item 1 limits_world
+        let ymin item 2 limits_world
+        let ymax item 3 limits_world
+        let x item 1 location 
+        let y item 0 location 
+        set xcor (x - xmin) / (xmax - xmin) * world-width + min-pxcor 
+        set ycor (y - ymin) / (ymax - ymin) * world-width + min-pycor
+        set name_action ?
+        set shape "house"
+        set size 10 
+      ]
+      set name_action ?    
+      set criteria_values (list 0 0 0 0 0 0 0 0 0 0 0 0 0)
+      set criteria_max (list 0 0 0 0 0 0 0 0 0 0 0 0 0)
+      set rescaled_criteria_values (list 0 0 0 0 0 0 0 0 0 0 0 0 0)
+      let w_sum sum (list item 16 item 10 MMMCc_limit
+        item 16 item 11 MMMCc_limit
+        item 16 item 12 MMMCc_limit
+        item 16 item 13 MMMCc_limit
+        item 16 item 14 MMMCc_limit
+        item 16 item 15 MMMCc_limit
+        item 16 item 17 MMMCc_limit
+        item 16 item 18 MMMCc_limit
+        item 16 item 19 MMMCc_limit
+        item 16 item 20 MMMCc_limit
+        item 16 item 21 MMMCc_limit
+        item 16 item 22 MMMCc_limit
+        item 16 item 23 MMMCc_limit)
+      
+      set criteria_weights (list (item 16 item 10 MMMCc_limit / w_sum)
+        (item 16 item 11 MMMCc_limit / w_sum)
+        (item 16 item 12 MMMCc_limit / w_sum)
+        (item 16 item 13 MMMCc_limit / w_sum)
+        (item 16 item 14 MMMCc_limit / w_sum)
+        (item 16 item 15 MMMCc_limit / w_sum)
+        (item 16 item 17 MMMCc_limit / w_sum)
+        (item 16 item 18 MMMCc_limit / w_sum)
+        (item 16 item 19 MMMCc_limit / w_sum)
+        (item 16 item 20 MMMCc_limit / w_sum)
+        (item 16 item 21 MMMCc_limit / w_sum)
+        (item 16 item 22 MMMCc_limit / w_sum)
+        (item 16 item 23 MMMCc_limit / w_sum))
+      
+      
+      
+      set criteria_names (list item 1 item 10 MMMCc_limit
+        item 1 item 11 MMMCc_limit
+        item 1 item 12 MMMCc_limit
+        item 1 item 13 MMMCc_limit
+        item 1 item 14 MMMCc_limit
+        item 1 item 15 MMMCc_limit
+        item 1 item 17 MMMCc_limit
+        item 1 item 18 MMMCc_limit
+        item 1 item 19 MMMCc_limit
+        item 1 item 20 MMMCc_limit
+        item 1 item 21 MMMCc_limit
+        item 1 item 22 MMMCc_limit
+        item 1 item 23 MMMCc_limit)
+      
+      
+      
+      let aw_sum sum (list item 16 item 2 MMMCc_limit
+        item 16 item 3 MMMCc_limit
+        item 16 item 4 MMMCc_limit
+        item 16 item 5 MMMCc_limit
+        item 16 item 6 MMMCc_limit
+        item 16 item 7 MMMCc_limit
+        item 16 item 8 MMMCc_limit
+        item 16 item 9 MMMCc_limit)
+      
+      if-else ANP = TRUE[
+        set alternative_weights (item 16 item (jj + 2) MMMCc_limit) / aw_sum
+      ][
+        set alternative_weights 1
+      ]
+    ]
+    set jj jj + 1
+    
+  ]
+  
+  ask Alternatives_MCc with [name_action = "Compra de agua"] [set v_scale_S [0.05 0.1 1 1 1]]
+  ask Alternatives_MCc with [name_action = "Movilizaciones"] [set v_scale_S [0.05 0.05 0.05 0.4 1]]
+  ask Alternatives_MCc with [name_action = "Accion colectiva"] [set v_scale_S [0.05 0.1 1 1 1]]
+  ask Alternatives_MCc with [name_action = "Captacion de agua"] [set v_scale_S [0.05 0.1 1 1 1]]
+  ask Alternatives_MCc with [name_action = "Modificacion vivienda"] [set v_scale_S [0 0 0 0 0]]
+  
+  
+  ask Alternatives_MCc with [name_action = "Compra de agua"] [set v_scale_F [0 0 0 0 0]]
+  ask Alternatives_MCc with [name_action = "Movilizaciones"] [set v_scale_F [0 0 0 0 0]]
+  ask Alternatives_MCc with [name_action = "Accion colectiva"] [set v_scale_F [0 0 0 0 0]]
+  ask Alternatives_MCc with [name_action = "Captacion de agua"] [set v_scale_F [0 0 0 0 0]]
+  ask Alternatives_MCc with [name_action = "Modificacion vivienda"] [set v_scale_F [0 1 1 1 1]]
+  ;################################################
+ 
+  
+  
+  
+  
+  
+  ;################################################
+  
+  
+  let MMWaterOperator_S csv:from-file  "data/DF101215_GOV_AP modificado PNAS.weighted.csv" ;DF101215_GOV_AP modificado.weighted
+  let MMWaterOperator_limit csv:from-file  "data/DF101215_GOV_AP modificado PNAS.limit.csv"
+  
+  set alternative_names(list item 1 item 2 MMWaterOperator_limit   ;define the alternatives
+    item 1 item 3 MMWaterOperator_limit
+    item 1 item 4 MMWaterOperator_limit
+    item 1 item 5 MMWaterOperator_limit
+    item 1 item 6 MMWaterOperator_limit)
+  set jj 0
+  let MMWaterOperator_weighed_S []
+  let MMWaterOperator_limit_S []
+  let VWaterOperator_limit_S []
+  let cc 2
+  let cri 2
+  ;
+  while [cri < 19][   ;tranfor the data from.csv to a matrix to manipulte using matrix extention
+    set cc 2
+    while [cc < 19][
+      set VWaterOperator_limit_S lput (item cc item cri MMWaterOperator_S) VWaterOperator_limit_S
+      set cc cc + 1
+    ]
+    set cri cri + 1
+    set MMWaterOperator_weighed_S lput VWaterOperator_limit_S MMWaterOperator_weighed_S
+    set VWaterOperator_limit_S []
+  ]
+  set MMWaterOperator_weighed_S matrix:from-row-list MMWaterOperator_weighed_S
+  set MMWaterOperator_limit_S matrix:eigenvectors MMWaterOperator_weighed_S
+  
+  foreach alternative_names[
+    ? ->
+    create-alternatives_WaterOperator_AB 1[    ;create an alternative, the criteria and the weights. Also in the case of HNP network the weight of each alternative in the limit matrix
+      set ID "DF101215_GOV"
+      set name_action ?
+      set label name_action
+      set criteria_values (list 0 0 0 0 0 0 0 0 0 0 0 0)
+      set criteria_max (list 0 0 0 0 0 0 0 0 0 0 0 0)
+      set rescaled_criteria_values (list 0 0 0 0 0 0 0 0 0 0 0 0)
+      let w_sum sum (list item 2 item 7 MMWaterOperator_limit
+        item 2 item 8 MMWaterOperator_limit
+        item 2 item 9 MMWaterOperator_limit
+        item 2 item 10 MMWaterOperator_limit
+        item 2 item 11 MMWaterOperator_limit
+        item 2 item 12 MMWaterOperator_limit
+        item 2 item 13 MMWaterOperator_limit
+        item 2 item 14 MMWaterOperator_limit
+        item 2 item 15 MMWaterOperator_limit
+        item 2 item 16 MMWaterOperator_limit
+        item 2 item 17 MMWaterOperator_limit
+        item 2 item 18 MMWaterOperator_limit
+      )
+      
+      set criteria_weights (
+        list (item 2 item 7 MMWaterOperator_limit / w_sum)
+        (item 2 item 8 MMWaterOperator_limit / w_sum)
+        (item 2 item 9 MMWaterOperator_limit / w_sum)
+        (item 2 item 10 MMWaterOperator_limit / w_sum)
+        (item 2 item 11 MMWaterOperator_limit / w_sum)
+        (item 2 item 12 MMWaterOperator_limit / w_sum)
+        (item 2 item 13 MMWaterOperator_limit / w_sum)
+        (item 2 item 14 MMWaterOperator_limit / w_sum)
+        (item 2 item 15 MMWaterOperator_limit / w_sum)
+        (item 2 item 16 MMWaterOperator_limit / w_sum)
+        (item 2 item 17 MMWaterOperator_limit / w_sum)
+        (item 2 item 18 MMWaterOperator_limit / w_sum)
+      )
+      
+      set criteria_names (list item 1 item 7 MMWaterOperator_limit
+        item 1 item 8 MMWaterOperator_limit
+        item 1 item 9 MMWaterOperator_limit
+        item 1 item 10 MMWaterOperator_limit
+        item 1 item 11 MMWaterOperator_limit
+        item 1 item 12 MMWaterOperator_limit
+        item 1 item 13 MMWaterOperator_limit
+        item 1 item 14 MMWaterOperator_limit
+        item 1 item 15 MMWaterOperator_limit
+        item 1 item 16 MMWaterOperator_limit
+        item 1 item 17 MMWaterOperator_limit
+        item 1 item 18 MMWaterOperator_limit
+      )
+      if-else ANP = TRUE[
+        set alternative_weights item (jj + 2) item (jj + 2) MMWaterOperator_limit /(item 5 item 5 MMWaterOperator_limit + item 4 item 4 MMWaterOperator_limit + item 3 item 3 MMWaterOperator_limit + item 6 item 6 MMWaterOperator_limit + item 2 item 2 MMWaterOperator_limit)
+      ][
+        set alternative_weights 1]
+    ]
+    set jj jj + 1
+    
+    
+  ]
+  
+  
+  
+set MMWaterOperator_D csv:from-file  "data/SACMEX_Drenaje__weighted_SESMO.csv"
+  set MMWaterOperator_D_limit csv:from-file  "data/SACMEX_Drenaje_limit_SESMO.csv"
+  set alternative_names (list item 1 item 2 MMWaterOperator_D   ;define the alternatives
+    item 1 item 3 MMWaterOperator_D)
+  set jj 0
+  let MMWaterOperator_limit_D []
+  let MMWaterOperator_limit_D_new []
+  let VWaterOperator_limit_D []
+  set cc 2
+  set cri 2
+  
+  while [cri < 17][   ;tranfor the data from.csv to a matrix to manipulte using matrix extention
+    set cc 2
+    while [cc < 17][
+      set VWaterOperator_limit_D lput (item cc item cri MMWaterOperator_D_limit) VWaterOperator_limit_D
+      set cc cc + 1
+    ]
+    set cri cri + 1
+    set MMWaterOperator_limit_D_new lput VWaterOperator_limit_D MMWaterOperator_limit_D_new
+    set VWaterOperator_limit_D []
+  ]
+  set MMWaterOperator_limit_D matrix:from-row-list MMWaterOperator_limit_D_new
+  
+  foreach alternative_names[
+    ? ->
+    create-Alternatives_WaterOperator_D 1[    ;create an alternative, the criteria and the weights. Also in the case of HNP network the weight of each alternative in the limit matrix (alternative_weights)
+      set ID "no-defined Drenage"
+      set name_action ?
+      set label name_action
+      set criteria_values (list 0 0 0 0 0 0 0 0 0 0 0 0 0)
+      set criteria_max (list 0 0 0 0 0 0 0 0 0 0 0 0 0)
+      set rescaled_criteria_values (list 0 0 0 0 0 0 0 0 0 0 0 0 0)
+      
+;      let w_sum sum (list matrix:get MMWaterOperator_limit_D 2 2
+;        matrix:get MMWaterOperator_limit_D 3 2
+;        matrix:get MMWaterOperator_limit_D 4 2
+;        matrix:get MMWaterOperator_limit_D 5 2
+;        matrix:get MMWaterOperator_limit_D 6 2
+;        matrix:get MMWaterOperator_limit_D 7 2
+;        matrix:get MMWaterOperator_limit_D 8 2
+;        matrix:get MMWaterOperator_limit_D 9 2
+;        matrix:get MMWaterOperator_limit_D 10 2
+;        matrix:get MMWaterOperator_limit_D 11 2
+;        matrix:get MMWaterOperator_limit_D 12 2
+;        matrix:get MMWaterOperator_limit_D 13 2
+;        matrix:get MMWaterOperator_limit_D 14 2
+;      )
+;      set criteria_weights (list precision (matrix:get MMWaterOperator_limit_D 2 2 / w_sum) 3
+;        precision (matrix:get MMWaterOperator_limit_D 3 2 / w_sum) 3
+;        precision (matrix:get MMWaterOperator_limit_D 4 2 / w_sum) 3
+;        precision (matrix:get MMWaterOperator_limit_D 5 2 / w_sum) 3
+;        precision (matrix:get MMWaterOperator_limit_D 6 2 / w_sum) 3
+;        precision (matrix:get MMWaterOperator_limit_D 7 2 / w_sum) 3
+;        precision (matrix:get MMWaterOperator_limit_D 8 2 / w_sum) 3
+;        precision (matrix:get MMWaterOperator_limit_D 9 2 / w_sum) 3
+;        precision (matrix:get MMWaterOperator_limit_D 10 2 / w_sum) 3
+;        precision (matrix:get MMWaterOperator_limit_D 11 2 / w_sum) 3
+;        precision (matrix:get MMWaterOperator_limit_D 12 2 / w_sum) 3
+;        precision (matrix:get MMWaterOperator_limit_D 13 2 / w_sum) 3
+;        precision (matrix:get MMWaterOperator_limit_D 14 2 / w_sum) 3)
+        set criteria_weights [
+          0.01
+          0.06
+          0.00
+          0.09
+          0.06
+          0.03
+          0.07
+          0.07
+          0.04
+          0.12
+          0.15
+          0.15
+          0.16] ;set the vectores que favorece nueva infra estructura
+      
+      set criteria_names (list item 1 item 4 MMWaterOperator_D
+        item 1 item 5 MMWaterOperator_D
+        item 1 item 6 MMWaterOperator_D
+        item 1 item 7 MMWaterOperator_D
+        item 1 item 8 MMWaterOperator_D
+        item 1 item 9 MMWaterOperator_D
+        item 1 item 10 MMWaterOperator_D
+        item 1 item 11 MMWaterOperator_D
+        item 1 item 12 MMWaterOperator_D
+        item 1 item 13 MMWaterOperator_D
+        item 1 item 14 MMWaterOperator_D
+        item 1 item 15 MMWaterOperator_D
+        item 1 item 16 MMWaterOperator_D)
+      
+        ;set alternative_weights matrix:get MMWaterOperator_limit_D jj jj / (matrix:get MMWaterOperator_limit_D 0 0 + matrix:get MMWaterOperator_limit_D 1 1)
+      ifelse name_action = "Mantenimiento"[set alternative_weights 0.48][set alternative_weights 0.509]
+    ]
+    set jj jj + 1
+  ]
+end
+
+ to set-initial-values-globals
+  set weeks 0                                          
+  set months 1
+  set years 1
+  set Presion_de_medios 1
+  set Tot_water_Imported_Cutzamala 14 * 60 * 60 * 24 ;[m3/s][s/min][min/hour][hours/day]   ;;total water imported from Cutzamala System
+  set Tot_water_Imported_Lerma 5 * 60 * 60 * 24                                            ;;total water imported from Lerma System
+  set truck_capasity 2                                                                     ; set capasity of a pipa [m3/truck]
+  set capacidad_cisterna 2                                                                 ;set storage capasity [m3/cisterna]
+  set Antiguedad-infra_Ab_max 1
+  set desperdicio_agua_max 1
+  set desviacion_agua_max 1
+  set garbage_max 1
+  set water_quality_max 1
+  set infra_abast_max 1
+  set infra_dranage_max 1
+  set falla_Ab_max 1
+  set falla_d_max 1
+  set precipitation_max 1
+  set Abastecimiento_max 1
+  set health_max 1
+  set monto_max 1
+  set scarcity_max 1
+  set Presion_social_max 1
+  set d_Compra_agua_max 1
+  set d_Captacion_agua_max 1
+  set d_Movilizaciones_max 1
+  set d_Modificacion_vivienda_max 1
+  set d_Accion_colectiva_max 1
+  set d_water_extraction_max 1
+  set d_mantenimiento_D_max 1
+  set d_new_max 1
+  set d_water_distribution_max 1
+  set d_water_importacion_max 1
+  set d_water_extraction_max 1
+  set Y_F_Max 1
+  set Y_S_Max 1
+  set densidad_pop_max 1
+ ;names and CVEGEO of municipalities inside DF
+  set scarcity_scale [1 3 7 20]
+end
+
+;#############################################################################################################################################
+to set_maximum   ;; update the maximum or minimum of values use by the model to calculate range of the value functions this time relative to the domain of the agent who needs the inforamtion to take decition
+  set Antiguedad-infra_Ab_max 120 * 365
+  set Antiguedad-infra_D_max 120 * 365
+  set desperdicio_agua_max 100;max [desperdicio_agua] of agebs with [CV_estado = estado];;max level of perception of deviation
+  set days_wno_water_max 28
+  set Gasto_hidraulico_max max [Gasto_hidraulico] of alternatives_CDMX
+  set presion_hidraulica_max max [presion_hidraulica] of alternatives_CDMX
+  set desviacion_agua_max max [desviacion_agua] of alternatives_CDMX
+  set Capacidad_Ab_max max [Capacidad_Ab] of alternatives_CDMX
+  set Capacidad_d_max max [Capacidad_d] of alternatives_CDMX
+  set garbage_max max [garbage] of alternatives_CDMX
+  set Obstruccion_dren_max max[Obstruccion_dren] of alternatives_CDMX
+  set hundimiento_max max [hundimiento] of alternatives_CDMX
+  set poblacion_max max [poblacion] of alternatives_CDMX
+  set water_quality_max 1
+  set max_water_in_mc max [days_water_in] of alternatives_CDMX
+  set infra_abast_max max [houses_with_abastecimiento] of alternatives_CDMX
+  set infra_dranage_max max [houses_with_dranage] of alternatives_CDMX
+  set flooding_max max [flooding] of alternatives_CDMX;;max level of flooding (encharcamientos) recored over the last 10 years
+  set ponding_max max [ponding] of alternatives_CDMX;;max level of flooding (encharcamientos) recored over the last 10 years
+  set precipitation_max max [precipitation] of alternatives_CDMX
+  set falla_ab_max max [Falla_ab] of alternatives_CDMX
+  set falla_d_max max [Falla_d] of alternatives_CDMX
+  set Abastecimiento_max max [Abastecimiento] of alternatives_CDMX
+  set health_max max [health] of alternatives_CDMX
+  set monto_max max [monto] of alternatives_CDMX
+  set scarcity_max max [scarcity] of alternatives_CDMX
+  set Presion_social_annual_max 54
+  set falta_d_max 1
+  set falta_Ab_max 1
+   set peticion_usuarios_max max [peticion_usuarios] of alternatives_CDMX
+  set d_Compra_agua_max max [d_Compra_agua] of alternatives_CDMX
+  set d_Captacion_agua_max max [d_Captacion_agua] of alternatives_CDMX
+  set d_Movilizaciones_max max [d_Movilizaciones] of alternatives_CDMX
+  set d_Modificacion_vivienda_max max [d_Modificacion_vivienda] of alternatives_CDMX
+  set d_Accion_colectiva_max max [d_Accion_colectiva] of alternatives_CDMX
+  set d_water_extraction_max max [d_water_extraction] of alternatives_CDMX
+  set d_mantenimiento_D_max max [d_mantenimiento_D] of alternatives_CDMX
+  set d_mantenimiento_max max [d_mantenimiento_Ab] of alternatives_CDMX
+  set d_new_max max [d_new_Ab] of alternatives_CDMX
+  set d_water_distribution_max max [d_water_distribution] of alternatives_CDMX
+  set d_water_importacion_max max [d_water_importacion] of alternatives_CDMX
+  set Y_F_Max max [Y_F] of alternatives_CDMX    ;max level of changes made to houses
+  set Y_S_Max max [Y_S] of alternatives_CDMX   ;max level of changes made to houses
+  set Vulnerability_S_max max [vulnerability_S] of alternatives_CDMX
+  set Vulnerability_F_max max [vulnerability_F] of alternatives_CDMX
+  set densidad_pop_max max [densidad_pop] of alternatives_CDMX
+  set max-elevation max [altitude] of agebs           ;;to visualize elevation
+  set min-elevation min [altitude] of agebs           ;;to visualize elevation 
+
+end
+
+to set-matrix-contj
+  foreach but-first item 0 contiguous_matrix
+  [ag_id ->
+    let j 1
+    (foreach (but-first item 0 contiguous_matrix) (but-first item j contiguous_matrix)
+      [ [ag_vec w_vec] ->
+        let l 0
+        if w_vec > 0[
+          ask alternatives_CDMX with [ID = ag_id][
+            set contiguous_agebs (turtle-set contiguous_agebs agebs with [ID = ag_vec])
+            set neighboor_weights lput w_vec neighboor_weights
+          ]
+        ]
+    ])
+    set j j + 1
+  ] 
+end
+
+to define_initial-contitions_PipedwaterDistribution
+  ;to define areas with irregular water supply by pipes (e.g. mean_days_withNo_water)[days per week]
+  ;crear csv table and read the values from it
+  ask alternatives_CDMX [
+    if CV_municipio = "002" [
+    set alt_mean_Delegation mean [altitude] of alternatives_CDMX with [CV_municipio = "002"]
+    set mean_days_withNo_water item 3 item 2 average_day_nowater_perweek
+    ];"Azcapotzalco"
+     if CV_municipio = "003"[
+    set alt_mean_Delegation mean [altitude] of alternatives_CDMX with [CV_municipio = "003"]
+    set mean_days_withNo_water item 3 item 4 average_day_nowater_perweek];"Coyoacan"
+    if CV_municipio = "004"[
+    set alt_mean_Delegation mean [altitude] of alternatives_CDMX with [CV_municipio = "004"]
+    set mean_days_withNo_water item 3 item 5 average_day_nowater_perweek];"Cuajimalpa"
+
+    if CV_municipio = "005"[
+    set alt_mean_Delegation mean [altitude] of alternatives_CDMX with [CV_municipio = "005"]
+    set mean_days_withNo_water item 3 item 7 average_day_nowater_perweek];"Gustavo A. Madero"
+
+     if CV_municipio = "006"[
+      set alt_mean_Delegation mean [altitude] of alternatives_CDMX with [CV_municipio = "006"]
+      set mean_days_withNo_water item 3 item 8 average_day_nowater_perweek];"Iztacalco"
+   if CV_municipio = "007"[
+    set alt_mean_Delegation mean [altitude] of alternatives_CDMX with [CV_municipio = "007"]
+    set mean_days_withNo_water item 3 item 9 average_day_nowater_perweek];"Iztapalapa"
+  if CV_municipio = "008"[
+    set alt_mean_Delegation mean [altitude] of alternatives_CDMX with [CV_municipio = "008"]
+    set mean_days_withNo_water item 3 item 10 average_day_nowater_perweek];"La Magdalena Contreras"
+  if CV_municipio = "009"[
+    set alt_mean_Delegation mean [altitude] of alternatives_CDMX with [CV_municipio = "009"]
+    set mean_days_withNo_water item 3 item 11 average_day_nowater_perweek];"Milpa Alta"
+  if CV_municipio = "010"[
+    set alt_mean_Delegation mean [altitude] of alternatives_CDMX with [CV_municipio = "010"]
+    set mean_days_withNo_water item 3 item 1 average_day_nowater_perweek];"Álvaro Obregón"
+  if CV_municipio = "011"[
+    set alt_mean_Delegation mean [altitude] of alternatives_CDMX with [CV_municipio = "011"]
+    set mean_days_withNo_water item 3 item 13 average_day_nowater_perweek];"Tláhuac"
+  if CV_municipio = "012"[
+    set alt_mean_Delegation mean [altitude] of alternatives_CDMX with [CV_municipio = "012"]
+    set mean_days_withNo_water item 3 item 14 average_day_nowater_perweek];"Tlalpan"
+  if CV_municipio = "013"[
+    set alt_mean_Delegation mean [altitude] of alternatives_CDMX with [CV_municipio = "013"]
+    set mean_days_withNo_water item 3 item 16 average_day_nowater_perweek];"Xochimilco"
+  if CV_municipio = "014"[
+    set alt_mean_Delegation mean [altitude] of alternatives_CDMX with [CV_municipio = "014"]
+    set mean_days_withNo_water item 3 item 3 average_day_nowater_perweek
+    ];"Benito Juárez"
+  if CV_municipio = "015"[
+    set alt_mean_Delegation mean [altitude] of alternatives_CDMX with [CV_municipio = "015"]
+    set mean_days_withNo_water item 3 item 6 average_day_nowater_perweek
+    ];"Cuauhtémoc"
+  if CV_municipio = "016"[
+    set alt_mean_Delegation mean [altitude] of alternatives_CDMX with [CV_municipio = "016"]
+    set mean_days_withNo_water item 3 item 12 average_day_nowater_perweek
+    ];"Miguel Hidalgo"
+  if CV_municipio = "017"[
+    set alt_mean_Delegation mean [altitude] of alternatives_CDMX with [CV_municipio = "017"]
+    set mean_days_withNo_water item 3 item 15 average_day_nowater_perweek];"Venustiano Carranza"
+  ]
+end
+
+;#############################################################################################################################################
+;#############################################################################################################################################
+to show_sewer
+  ask sewage_nodes [ifelse hidden? = false [set hidden? true][set hidden? false]]
+  ask D_pipes [ifelse hidden? = false [set hidden? true][set hidden? false]]
+end
