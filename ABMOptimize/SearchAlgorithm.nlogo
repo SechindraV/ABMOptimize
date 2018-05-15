@@ -26,7 +26,7 @@ globals [
   pd2 ;d for action 2
   pd3 ;d for action 3
   pd4 ;d for action 4
-  budget  ;;budget list for each action
+  ;budget  ;;budget list for each action
   strategy
   mf_old ;mean fitness at t-1
   mf_current ; mean fitness at t
@@ -40,7 +40,7 @@ to setup
   profiler:reset
   profiler:start
   random-seed 12345
-  set budget 200
+  ;set budget 200
   ;set budget n-values 4 [9500000000 + random-float 5 ]
   set strategy [[1 0 0 0][0 1 0 0][0 0 1 0][0 0 0 1]]
   ;print r:get "rnorm(1)"
@@ -83,19 +83,22 @@ to doNondominatedSorting
   r:put "dr2" pd2
   r:put "dr3" pd3
   r:put "dr4" pd4
+  r:put "budget" budget
   ;r:put "id_so" ID_sort
-  r:put "tau_r" tau_ndom
-  r:eval "dm<-matrix(c(dr1,dr2,dr3,dr4),nrow=4,byrow=TRUE)"
+ ; r:put "tau_r" tau_ndom
+    r:eval "dm<-matrix(c(dr1,dr2,dr3,dr4),nrow=4,byrow=TRUE)"
   r:eval "r<-doNondominatedSorting(dm)$ranks"
-  set sorted_ID_filter r:get "rep(1,length(dr1)) * (r>tau_r)"
-  set pd1 r:get "dr1[which(r>tau_r)]"
-  set pd2 r:get "dr2[which(r>tau_r)]"
-  set pd3 r:get "dr3[which(r>tau_r)]"
-  set pd4 r:get "dr4[which(r>tau_r)]"
-  set N_neighborhoods sum sorted_ID_filter
+  ;set sorted_ID_filter r:get "rep(1,length(dr1)) * (r>tau_r)"
+set pd1 r:get "dr1[order(r)[1:budget]]"
+  set pd2 r:get "dr2[order(r)[1:budget]]"
+  set pd3 r:get "dr3[order(r)[1:budget]]"
+  set pd4 r:get "dr4[order(r)[1:budget]]"
+  ;set N_neighborhoods sum sorted_ID_filter
+    set N_neighborhoods length pd1
   print r:get "doNondominatedSorting(dm)$ranks"
   ;print sorted_ID_filter
   print N_neighborhoods
+
 ;#############################################################################################################################################
 ;#############################################################################################################################################
 end
@@ -381,9 +384,9 @@ SLIDER
 population-size
 population-size
 0
-100000
-750.0
-10
+1000
+700.0
+100
 1
 NIL
 HORIZONTAL
@@ -567,7 +570,7 @@ mutant-size
 mutant-size
 0
 100
-35.0
+25.0
 1
 1
 NIL
@@ -588,21 +591,6 @@ patches-num
 NIL
 HORIZONTAL
 
-SLIDER
-419
-530
-591
-563
-tau_ndom
-tau_ndom
-0
-100
-8.0
-1
-1
-NIL
-HORIZONTAL
-
 MONITOR
 716
 550
@@ -613,6 +601,21 @@ N_neighborhoods
 17
 1
 11
+
+SLIDER
+390
+447
+562
+480
+budget
+budget
+0
+10000
+1000.0
+100
+1
+NIL
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?
@@ -964,20 +967,30 @@ NetLogo 6.0.2
     <go>go</go>
     <metric>[tf] of max-one-of turtles [tf]</metric>
     <metric>timer</metric>
+    <metric>ticks</metric>
     <enumeratedValueSet variable="initial-condition">
       <value value="5"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="population-size">
-      <value value="750"/>
+      <value value="500"/>
+      <value value="600"/>
+      <value value="700"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="mutant-size">
-      <value value="35"/>
+      <value value="10"/>
+      <value value="15"/>
+      <value value="20"/>
+      <value value="25"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="patches-num">
-      <value value="1000"/>
-      <value value="1500"/>
-      <value value="2000"/>
       <value value="2500"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="budget">
+      <value value="200"/>
+      <value value="400"/>
+      <value value="600"/>
+      <value value="800"/>
+      <value value="1000"/>
     </enumeratedValueSet>
   </experiment>
 </experiments>
